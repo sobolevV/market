@@ -1,12 +1,17 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect
 
 app = Flask(__name__)
 
 
 @app.route('/')
-def hello_world():
-    return 'Hello World!'
+def home():
+    return render_template("body.html", title="Главная страница")
+
+
+@app.route('/about')
+def about_page():
+    return render_template("about.html", title="О нас")
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
