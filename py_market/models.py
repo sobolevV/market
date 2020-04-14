@@ -1,18 +1,28 @@
+from py_market import db
 
 
-class admin:
+class Admin(db.Model):
     """Админ сайта"""
     def __init__(self):
         pass
 
+    def __repr__(self):
+        pass
 
-class user:
+
+class User(db.Model):
     """Зарегистрированный пользователь сайта"""
     def __init__(self):
         pass
 
+    def __repr__(self):
+        pass
 
-class product:
+
+class Product(db.Model):
     """Продукт, который может приобрести и заказать user"""
     def __init__(self):
+        pass
+
+    def __repr__(self):
         pass
