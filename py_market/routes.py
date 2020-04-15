@@ -1,8 +1,5 @@
-from flask import render_template, redirect, flash
-from py_market import app
-from flask_admin import Admin
-
-admin = Admin(app)
+from flask import render_template, redirect, flash, request
+from py_market import app, security, admin
 
 
 @app.route('/')
