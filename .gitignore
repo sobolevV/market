@@ -1,2 +1,4 @@
 /.idea/
 /__pycache__/
+/py_market/static/
+/py_market/test.db

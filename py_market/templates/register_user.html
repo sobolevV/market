@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+
+    <div class="uk-container-small uk-margin-medium uk-margin-auto uk-background-muted uk-padding">
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+                <span class="uk-label uk-label-success">{{ message }}</span>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        {% if not to_home %}
+        <form class="uk-form uk-form-horizontal" method="post" >
+            {{form.hidden_tag()}}
+
+            {% for field in form %}
+                <div class="uk-margin">
+                    {{ field.label(class_="uk-form-label uk-text-center uk-text-break")}}
+                    <div class="uk-form-controls">
+                        {{ field(class_="uk-input") }}
+                    </div>
+                </div>
+                {% if loop.index == 4 %}{% break %}{% endif %}
+            {% endfor %}
+
+{#               Register.sex#}
+            <div class="uk-margin">
+                 <div class="uk-form-label uk-text-center uk-text-break">{{ form.sex.label.text }}</div>
+                    <div class="uk-form-controls uk-form-controls-text">
+                        {% for subfield in form.sex %}
+                                <label>{{ subfield.label.text }} {{ subfield(class_="uk-radio") }}</label>
+                        {% endfor %}
+                    </div>
+            </div>
+
+            <div class="uk-margin">
+                <div class="uk-form-controls uk-form-controls-text">
+                    {{ form.submit(class_="uk-button uk-width-1-1 uk-button-primary") }}
+                </div>
+            </div>
+        </form>
+        {% else %}
+            <div class="uk-margin uk-margin-auto uk-margin-medium">
+                 <a href="{{ url_for('home') }}">
+                     <div class="uk-button uk-button-primary uk-button-large uk-width-1-1">
+                         На главную
+                     </div>
+                 </a>
+            </div>
+        {% endif %}
+
+{#            Validated messages#}
+        {% if warnings %}
+            <ul class="uk-list">
+                {% for warning in warnings %}
+                    <li class="uk-text-warning">{{ warning }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{#{% block footer %}#}
+{#    {{ super() }}#}
+{#{% endblock %}#}
+{#{% include "footer.html" %}#}

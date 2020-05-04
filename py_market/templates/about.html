@@ -1,5 +1,9 @@
-{% extends "body.html" %}
-{% block body %}
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+
     <div class="uk-container">
         <div class="uk-heading-medium">
             head
@@ -9,4 +13,5 @@
             Text
         </div>
     </div>
+
 {% endblock %}

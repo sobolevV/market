@@ -1,0 +1,29 @@
+<html lang="en">
+
+{#{% include "head.html" %}#}
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}{% endblock %}</title>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='/css/style.css') }}">
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='/css/uikit.css') }}">
+        <script type="text/javascript" src="{{ url_for('static', filename='/js/uikit.min.js') }}"></script>
+    </head>
+    <body>
+
+        {% block header %}
+            {% include "header.html" %}
+        {% endblock %}
+
+        <div offset-bottom uk-height-viewport class="uk-container uk-margin-top uk-margin-auto-bottom">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <div id="footer"  class="uk-margin-top uk-visible@s">
+            {% block footer %}
+                {% include "footer.html"%}
+            {% endblock %}
+        </div>
+    </body>
+
+</html>

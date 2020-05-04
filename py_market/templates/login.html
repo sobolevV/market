@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="uk-container-small uk-margin-medium uk-margin-auto uk-background-muted uk-padding" >
+        <form class="uk-form uk-form-horizontal" method="post">
+            {{ form.hidden_tag() }}
+            {% for field in form %}
+                <div class="uk-margin">
+                    {{ field.label(class_="uk-form-label uk-text-center uk-text-break")}}
+                    <div class="uk-form-controls">
+                        {{ field(class_="uk-input") }}
+                    </div>
+                </div>
+                {% if loop.index == 2 %}{% break %}{% endif %}
+            {% endfor %}
+
+                <div class="uk-margin">
+                      <label class="uk-form-label uk-text-center uk-text-break">
+                            {{ form.remember_me.label.text}}
+                            {{ form.remember_me(class_="uk-checkbox") }}
+                        </label>
+                    <div class="uk-form-controls">
+                        {{ form.submit(class_="uk-button uk-button-large uk-button-primary uk-width-1-1 uk-align-center") }}
+                    </div>
+                </div>
+        </form>
+    </div>
+{% endblock %}
