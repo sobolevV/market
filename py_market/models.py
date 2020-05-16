@@ -1,49 +1,71 @@
 from py_market import db
 from flask_security import UserMixin, RoleMixin
+from datetime import date
 
+# not good
 ROLE_USER = "user"
 ROLE_ADMIN = "admin"
 
 # roles_users many_to_many
 roles_users = db.Table("roles_users",
-                       db.Column('user_id', db.Integer, db.ForeignKey('User.id'), primary_key=True),
-                       db.Column('role_id', db.Integer, db.ForeignKey('Role.id'), primary_key=True), extend_existing=True)
-roles_users
+                       db.Column('user_id', db.Integer, db.ForeignKey('User.id')),
+                       db.Column('role_id', db.Integer, db.ForeignKey('Role.id'))
+                       )
+
 
 # ____Define models for users____
-
-
 class User(db.Model, UserMixin):
     __tablename__ = "User"
-    __table_args__ = {'extend_existing': True}
 
-    id = db.Column(db.Integer, primary_key=True)
+    # Main attrs
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(200), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    active = db.Column(db.Boolean())
-    confirmed_at = db.Column(db.DateTime())
-    roles = db.relationship('Role', secondary=roles_users, lazy="dynamic",
-                            backref=db.backref('users', lazy='dynamic'))
 
-    name = db.Column(db.String(200), nullable=False)
-    sex = db.Column(db.Boolean)
-    address = db.relationship('Address', backref=db.backref('user', lazy=True))
+    # For Flask-login
+    active = db.Column(db.Boolean())
+    is_auth = db.Column(db.Boolean(), default=False)
+    confirmed_at = db.Column(db.DateTime())
+
+    # Relations (FK)
+    roles = db.relationship("Role", backref=db.backref("users", lazy=True), uselist=True) # , secondary="roles_users"
+    address_id = db.Column(db.Integer, db.ForeignKey("Address.id"))
+    address = db.relationship("Address", backref=db.backref("users", lazy=True))
 
     def __repr__(self):
         return f"<User id={self.id}, email={self.email}"
+
+    @property
+    def is_authenticated(self):
+        return self.is_auth
+
+    @property
+    def is_active(self):
+        return self.active
+
+    @staticmethod
+    def get_user_by_email(email: str):
+        return User.query.filter_by(email=email).first()
+
+    def auth_user(self):
+        self.active = True
+        self.is_auth = True
+        self.confirmed_at = date.today
+        db.session.commit()
 
 
 class Role(db.Model, RoleMixin):
     """Roles for user. One or more roles for one user"""
     __tablename__ = "Role"
 
-    id = db.Column(db.SmallInteger, primary_key=True)
-    name = db.Column(db.String(50), unique=True, default=ROLE_USER)
-    description = db.Column(db.String(100))
-    # + user
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), default=ROLE_USER)
+    description = db.Column(db.String(100), nullable=True, )
+    user_id = db.Column(db.Integer, db.ForeignKey("User.id"))
 
     def __repr__(self):
-        return f"Name: {self.name}, role id: {self.id}"
+        return f"Name: {self.name}"
 
 
 class Address(db.Model):
@@ -51,7 +73,6 @@ class Address(db.Model):
     __tablename__ = "Address"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
     address = db.Column(db.String(150), nullable=True)
 
     def __repr__(self):
@@ -70,19 +91,29 @@ products_materials = db.Table("products_materials", db.Model.metadata,
 class Product(db.Model):
     """Product"""
     __tablename__ = "Product"
-    id = db.Column(db.Integer, primary_key=True)
-
-    type_id = db.Column(db.Integer, db.ForeignKey("Type.id"), nullable=False)
-    material_id = db.Column(db.Integer, db.ForeignKey(products_materials.c.material_id))
-
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
-    price = db.Column(db.Integer, nullable=False)
-    arrival_date = db.Column(db.Date(), nullable=False)
-    description = db.Column(db.String(100), nullable=True)
-    # sale - Скидка (to future)
+    # price = db.Column(db.Integer, nullable=False)
+    arrival_date = db.Column(db.Date(), default=date.today)
+
+    # photos_id = db.Column(db.Integer, db.ForeignKey("ProductPhoto.id"))
+    # photos = db.relationship("ProductPhoto", backref="product", lazy=False, foreign_keys=[photos_id])
 
     def __repr__(self):
-        return f"<Name {self.name}>, id: {self.id}"
+        return f"<Name {self.name}, id: {self.id}>"
+
+
+class ProductPhoto(db.Model):
+    __tablename__ = "ProductPhoto"
+
+    id = db.Column(db.Integer, primary_key=True)
+    path = db.Column(db.String(250))
+    products = db.Column(db.Integer, db.ForeignKey(Product.id))
+    product = db.relationship(Product, backref=db.backref("photos", lazy="subquery"))
+    # products_id = db.Column(db.Integer, db.ForeignKey("Product.id"))
+
+    def __repr__(self):
+        return f"<ProductPhoto: {self.path}>"
 
 
 class Material(db.Model):
@@ -90,11 +121,11 @@ class Material(db.Model):
     __tablename__ = "Material"
 
     id = db.Column(db.Integer, primary_key=True)
-    products = db.relationship(Product, secondary=products_materials,
-                               secondaryjoin=(products_materials.c.material_id == id),
-                               primaryjoin=(products_materials.c.product_id == Product.id),
-                               lazy="dynamic",
-                               backref=db.backref('materials', lazy="dynamic"))
+    ## products = db.relationship(Product, secondary=products_materials,
+    #                            secondaryjoin=(products_materials.c.material_id == id),
+    #                            primaryjoin=(products_materials.c.product_id == Product.id),
+    #                            lazy="dynamic",
+    #                            backref=db.backref('materials', lazy="dynamic"))
 
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(100), nullable=True)
@@ -104,9 +135,8 @@ class Type(db.Model):
     __tablename__ = "Type"
 
     id = db.Column(db.Integer, primary_key=True)
-    products = db.relationship("Product", lazy="dynamic", backref='type')
+    ## products = db.relationship("Product", lazy="dynamic", backref='type')
     # product_id = db.Column(db.Integer, db.ForeignKey("Product.id"), nullable=False)
-
     name = db.Column(db.String(100), nullable=False, unique=True)
 
 
@@ -114,9 +144,10 @@ class Pstorage(db.Column):
     __tablename__ = "Pstorage"
 
     id = db.Column(db.Integer, primary_key=True)
-    products = db.relationship("Product", lazy="dynamic", backref='in_storage')
+    ## products = db.relationship("Product", lazy="dynamic", backref='in_storage')
     size = db.Column(db.Integer)
     count = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
         return f"ID: {self.id}, size: {self.size}, count: {self.count}"
+

@@ -5,15 +5,7 @@
 
     <div class="uk-container-small uk-margin-medium uk-margin-auto uk-background-muted uk-padding">
 
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            {% for message in messages %}
-                <span class="uk-label uk-label-success">{{ message }}</span>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-
-        {% if not to_home %}
+        {#     Register form       #}
         <form class="uk-form uk-form-horizontal" method="post" >
             {{form.hidden_tag()}}
 
@@ -28,14 +20,14 @@
             {% endfor %}
 
 {#               Register.sex#}
-            <div class="uk-margin">
-                 <div class="uk-form-label uk-text-center uk-text-break">{{ form.sex.label.text }}</div>
-                    <div class="uk-form-controls uk-form-controls-text">
-                        {% for subfield in form.sex %}
-                                <label>{{ subfield.label.text }} {{ subfield(class_="uk-radio") }}</label>
-                        {% endfor %}
-                    </div>
-            </div>
+{#            <div class="uk-margin">#}
+{#                 <div class="uk-form-label uk-text-center uk-text-break">{{ form.sex.label.text }}</div>#}
+{#                    <div class="uk-form-controls uk-form-controls-text">#}
+{#                        {% for subfield in form.sex %}#}
+{#                                <label>{{ subfield.label.text }} {{ subfield(class_="uk-radio") }}</label>#}
+{#                        {% endfor %}#}
+{#                    </div>#}
+{#            </div>#}
 
             <div class="uk-margin">
                 <div class="uk-form-controls uk-form-controls-text">
@@ -43,17 +35,18 @@
                 </div>
             </div>
         </form>
-        {% else %}
-            <div class="uk-margin uk-margin-auto uk-margin-medium">
-                 <a href="{{ url_for('home') }}">
-                     <div class="uk-button uk-button-primary uk-button-large uk-width-1-1">
-                         На главную
-                     </div>
-                 </a>
-            </div>
-        {% endif %}
 
-{#            Validated messages#}
+        {#        {% else %}#}
+        {#            <div class="uk-margin uk-margin-auto uk-margin-medium">#}
+        {#                 <a href="{{ url_for('home') }}">#}
+        {#                     <div class="uk-button uk-button-primary uk-button-large uk-width-1-1">#}
+        {#                         На главную#}
+        {#                     </div>#}
+        {#                 </a>#}
+        {#            </div>#}
+        {#        {% endif %}#}
+
+        {# Validate register form messages#}
         {% if warnings %}
             <ul class="uk-list">
                 {% for warning in warnings %}
@@ -61,6 +54,7 @@
                 {% endfor %}
             </ul>
         {% endif %}
+
     </div>
 {% endblock %}
 

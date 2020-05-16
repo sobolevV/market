@@ -11,12 +11,19 @@
     <body>
 
         {% block header %}
-            {% include "header.html" %}
+            {% with user = user %}
+                {% include "header.html"%}
+            {% endwith %}
         {% endblock %}
 
+
+
         <div offset-bottom uk-height-viewport class="uk-container uk-margin-top uk-margin-auto-bottom">
+            {% include "flashed_messages.html" %}
+
             {% block content %}
             {% endblock %}
+
         </div>
 
         <div id="footer"  class="uk-margin-top uk-visible@s">

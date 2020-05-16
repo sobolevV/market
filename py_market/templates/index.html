@@ -1,5 +1,17 @@
+{#{% with user = user %}#}
 {% extends "base.html" %}
 
+
+
 {% block content %}
+    {% if info %}
+        <div class="uk-container-small uk-position-center">{{ info }} </div>
+    {% endif %}
+
+    {% if user.is_authentificated %}
+        <div class="uk-heading-medium">Привет, {{ user.name }}</div>
+    {% else %}
+         <div class="uk-heading-medium">Кажется вы не заеристрированы</div>
+    {% endif %}
 
 {% endblock %}

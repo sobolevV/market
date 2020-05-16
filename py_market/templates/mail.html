@@ -1,0 +1,27 @@
+<html>
+    <head>
+         <style type="text/css">
+             #main_block{
+                 font-family: Monospace;
+                 text-align: center;
+                 background: rgb(50, 97, 226);
+                 padding: 3em;
+             }
+             .text-color{ color: #c7c6db;}
+             a{
+                 text-decoration: none;
+                 color: #c7c6db;
+             }
+        </style>
+    </head>
+
+    <div id="main_block">
+          <h1 class="text-color">
+            Здравствуйте, {{username}}
+          </h1>
+          <span class="text-color" style="font-size: 1.25em">
+          Вы были зарегистрированы на сайте {{name}}.<br>
+          Для подтверждения электронной почты перейдите по <a href={{link}}>ссылке</a>
+          </span>
+    </div>
+</html>

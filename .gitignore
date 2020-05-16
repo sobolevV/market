@@ -2,3 +2,5 @@
 /__pycache__/
 /py_market/static/
 /py_market/test.db
+/py_market/static/images/products/
+/py_market/mail_config.py

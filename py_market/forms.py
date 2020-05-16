@@ -1,6 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, RadioField, BooleanField
-from wtforms.validators import Required, Regexp, EqualTo, InputRequired, Length, Optional, Email
+from wtforms.validators import Required, Regexp, EqualTo, InputRequired, Length, Optional, Email, ValidationError
+from flask_security.utils import verify_password
+from py_market import User
+
 
 password_len = 6
 messages = {
@@ -35,8 +38,12 @@ class CustomRegisterForm(FlaskForm):
                                                      message="Пароль должен содержать минимум 1 цифру.")])
     confirm_password = PasswordField("Подтвердите пароль *", validators=[EqualTo('password',
                                                                                  message="Пароли не совпадают.")])
-    sex = RadioField("Пол", choices=[("male", "Мужской"), ("female", "Женский")], validators=[Optional()])
+    # sex = RadioField("Пол", choices=[("male", "Мужской"), ("female", "Женский")], validators=[Optional()])
     submit = SubmitField("Регистрация")
+
+    def validate_email(self, email_field):
+        if User.query.filter_by(email=email_field.data).first():
+            raise ValidationError(message="Пользователь с таким email уже существует")
 
 
 class CustomLoginForm(FlaskForm):
@@ -44,6 +51,11 @@ class CustomLoginForm(FlaskForm):
     password = CustomRegisterForm.password
     remember_me = BooleanField("Запомнить меня", default=False)
     submit = SubmitField("Войти")
+
+    def validate_password(self, password_field):
+        user = User.query.filter_by(email=self.email.data).first()
+        if not verify_password(password_field.data, user.password):
+            raise ValidationError("Неверный пароль")
 
 
 class ChangePassword(FlaskForm):
