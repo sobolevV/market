@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% with product = product %}
+        <div class="uk-child-width-1-2" uk-grid>
+            {# IMAGES OF PRODUCT #}
+{#         uk-width-1-1@s uk-width-2-3@m uk-width-2-3@l uk-width-2-3@xl#}
+            <div class="">
+                {# IF PRODUCT HAS PHOTOS #}
+                {% if product.photos|length >= 1 %}
+                    {# SHOW SLIDER #}
+                    <div class="uk-position-relative uk-visible-toggle uk-light"
+                         uk-slideshow="animation: pull; finite: true; ratio: 1:1;">
+                        <ul class="uk-slideshow-items">
+                            {% for photo in product.photos %}
+                                <li>
+                                    <img src="{{url_for('static', filename=photo.path) }}" alt="alt_img" uk-cover>
+                                </li>
+                            {% endfor %}
+
+                        </ul>
+                        <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#"
+                           uk-slidenav-previous uk-slideshow-item="previous"></a>
+                        <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#"
+                           uk-slidenav-next uk-slideshow-item="next"></a>
+                    </div>
+                {% else %}
+                    {# ELSE SHOW 'DEFAULT' IAMGE#}
+                {% endif %}
+            </div>
+
+            {# PRODUCT DESCRIPTION #}
+
+            <div>
+                {# PRODUCT NAME #}
+                <div class="uk-h2 uk-text-bold uk-text-uppercase">
+                    {{ product.name }}
+                </div>
+                {# PRODUCT PRICE #}
+                <div class="uk-h3 uk-text-bold uk-text-uppercase">
+                    {{ product.price }}
+                </div>
+                <hr>
+                {# ANOTHER DESCRIPTION #}
+                <div class="">
+                    {% if product.description %}
+                        <p class="uk-text-muted uk-text-middle">Описание:</p>
+                        <span class="uk-text-light ">{{ product.description }}</span>
+                    {% endif %}
+                    {# PRODUCT MATERIAL #}
+                    {% if product.material|length >= 1 %}
+                        {% for materials in product.material|groupby("name") %}
+                            <p class="uk-text-muted uk-text-middle">
+                                Материал: {{ materials.list|join(", ") }}
+                            </p>
+                        {% endfor %}
+                    {% endif %}
+                    {# PRODUCT CATEGORY #}
+                    {% if product.category|length %}
+                        <p class="uk-text-muted uk-text-middle">
+                            Категория: {{ product.category.name }}
+                        </p>
+                    {% endif %}
+                    {# PRODUCT DATE ADD #}
+                    <p class="uk-text-muted uk-text-middle">
+                        Дата добавления: {{ product.arrival_date }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% endwith %}
+{% endblock %}

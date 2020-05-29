@@ -1,25 +1,27 @@
-<html lang="en">
+{# BASE - PARENT PAGE #}
+{% from "macroses.html" import show_flashed_messages with context %}
 
-{#{% include "head.html" %}#}
+<html lang="ru">
     <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}{% endblock %}</title>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='/css/style.css') }}">
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='/css/uikit.css') }}">
-        <script type="text/javascript" src="{{ url_for('static', filename='/js/uikit.min.js') }}"></script>
+        {% block head %}
+            <meta charset="UTF-8">
+            <title>{% block title %}{% endblock %}</title>
+            <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='/css/style.css') }}">
+            <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='/css/uikit.css') }}">
+            {#<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='/css/uikit-rtl.min.css') }}">#}
+            <script type="text/javascript" src="{{ url_for('static', filename='/js/uikit.js') }}"></script>
+            <script type="text/javascript" src="{{ url_for('static', filename='/js/uikit-icons.js') }}"></script>
+        {% endblock %}
     </head>
+
     <body>
 
         {% block header %}
-            {% with user = user %}
-                {% include "header.html"%}
-            {% endwith %}
+            {% include "header.html" with context %}
         {% endblock %}
 
-
-
         <div offset-bottom uk-height-viewport class="uk-container uk-margin-top uk-margin-auto-bottom">
-            {% include "flashed_messages.html" %}
+            {{ show_flashed_messages() }}
 
             {% block content %}
             {% endblock %}
@@ -31,6 +33,7 @@
                 {% include "footer.html"%}
             {% endblock %}
         </div>
+
     </body>
 
 </html>

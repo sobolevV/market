@@ -37,7 +37,8 @@ class User(db.Model, UserMixin):
         return f"<User id={self.id}, email={self.email}"
 
     @property
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
+        """:returns True if user activated account"""
         return self.is_auth
 
     @property
@@ -46,12 +47,16 @@ class User(db.Model, UserMixin):
 
     @staticmethod
     def get_user_by_email(email: str):
+        """:returns User object if email in db,
+                    else None
+        """
         return User.query.filter_by(email=email).first()
 
     def auth_user(self):
+        """Activate current user, commit in db"""
         self.active = True
         self.is_auth = True
-        self.confirmed_at = date.today
+        self.confirmed_at = date.today()
         db.session.commit()
 
 
@@ -75,45 +80,29 @@ class Address(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     address = db.Column(db.String(150), nullable=True)
 
-    def __repr__(self):
-        return f"<User id: {self.user_id}, address: {self.address}>"
-
 
 # ____Define models for products____
 # products_materials many to many
-products_materials = db.Table("products_materials", db.Model.metadata,
-                              db.Column('product_id', db.Integer, db.ForeignKey("Product.id")),
-                              db.Column('material_id', db.Integer, db.ForeignKey("Material.id")))
-
-# db.Column('id', db.Integer, primary_key=True),
+# products_materials = db.Table("products_materials", db.Model.metadata,
+#                               db.Column('product_id', db.Integer, db.ForeignKey("Product.id")),
+#                               db.Column('material_id', db.Integer, db.ForeignKey("Material.id")))
 
 
 class Product(db.Model):
     """Product"""
     __tablename__ = "Product"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100), nullable=False)
-    # price = db.Column(db.Integer, nullable=False)
-    arrival_date = db.Column(db.Date(), default=date.today)
 
+    name = db.Column(db.String(100), nullable=False)
+    # Float
+    price = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.String(200))
+    arrival_date = db.Column(db.Date(), default=date.today())
+
+    # category = db.Column(db.Integer, db.ForeignKey("Category.id"))
+    # material = db.Column(db.Integer, db.ForeignKey("Material.id"))
     # photos_id = db.Column(db.Integer, db.ForeignKey("ProductPhoto.id"))
     # photos = db.relationship("ProductPhoto", backref="product", lazy=False, foreign_keys=[photos_id])
-
-    def __repr__(self):
-        return f"<Name {self.name}, id: {self.id}>"
-
-
-class ProductPhoto(db.Model):
-    __tablename__ = "ProductPhoto"
-
-    id = db.Column(db.Integer, primary_key=True)
-    path = db.Column(db.String(250))
-    products = db.Column(db.Integer, db.ForeignKey(Product.id))
-    product = db.relationship(Product, backref=db.backref("photos", lazy="subquery"))
-    # products_id = db.Column(db.Integer, db.ForeignKey("Product.id"))
-
-    def __repr__(self):
-        return f"<ProductPhoto: {self.path}>"
 
 
 class Material(db.Model):
@@ -121,30 +110,41 @@ class Material(db.Model):
     __tablename__ = "Material"
 
     id = db.Column(db.Integer, primary_key=True)
-    ## products = db.relationship(Product, secondary=products_materials,
-    #                            secondaryjoin=(products_materials.c.material_id == id),
-    #                            primaryjoin=(products_materials.c.product_id == Product.id),
-    #                            lazy="dynamic",
-    #                            backref=db.backref('materials', lazy="dynamic"))
 
+    product_id = db.Column(db.Integer, db.ForeignKey("Product.id"))
+    products = db.relationship("Product", backref="material", lazy="subquery", foreign_keys=[product_id])
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(100), nullable=True)
 
 
-class Type(db.Model):
-    __tablename__ = "Type"
+class Category(db.Model):
+    """Category of product"""
+    __tablename__ = "Category"
 
     id = db.Column(db.Integer, primary_key=True)
-    ## products = db.relationship("Product", lazy="dynamic", backref='type')
-    # product_id = db.Column(db.Integer, db.ForeignKey("Product.id"), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("Product.id"))
+    products = db.relationship("Product", backref="category", lazy="subquery", foreign_keys=[product_id])
     name = db.Column(db.String(100), nullable=False, unique=True)
 
 
+class ProductPhoto(db.Model):
+    """Photos for product"""
+    __tablename__ = "ProductPhoto"
+
+    id = db.Column(db.Integer, primary_key=True)
+    path = db.Column(db.String(250))
+    products = db.Column(db.Integer, db.ForeignKey(Product.id))
+    product = db.relationship(Product, backref=db.backref("photos", lazy="subquery"), foreign_keys=[products])
+
+    def __repr__(self):
+        return f"<ProductPhoto: {self.path}>"
+
+
 class Pstorage(db.Column):
+    """Count of each product at storage"""
     __tablename__ = "Pstorage"
 
     id = db.Column(db.Integer, primary_key=True)
-    ## products = db.relationship("Product", lazy="dynamic", backref='in_storage')
     size = db.Column(db.Integer)
     count = db.Column(db.Integer, nullable=False)
 

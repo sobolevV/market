@@ -1,17 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
+    {% with warnings = warnings %}
+    {% endwith %}
 
     <div class="uk-container-small uk-margin-medium uk-margin-auto uk-background-muted uk-padding" >
+        {# LOGIN FORM #}
         <form class="uk-form uk-form-horizontal" method="post">
             {{ form.hidden_tag() }}
             {% for field in form %}
+
                 <div class="uk-margin">
                     {{ field.label(class_="uk-form-label uk-text-center uk-text-break")}}
                     <div class="uk-form-controls">
                         {{ field(class_="uk-input") }}
                     </div>
                 </div>
+
                 {% if loop.index == 2 %}{% break %}{% endif %}
             {% endfor %}
 
@@ -25,5 +30,15 @@
                     </div>
                 </div>
         </form>
+        {# END LOGIN FORM #}
+
+        {# Validate login form messages #}
+        {% if warnings %}
+            <ul class="uk-list">
+                {% for warning in warnings %}
+                    <li class="uk-text-warning">{{ warning }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </div>
 {% endblock %}

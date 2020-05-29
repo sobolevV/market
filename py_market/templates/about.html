@@ -1,17 +1,49 @@
 {% extends "base.html" %}
 
-{% block title %}{{title}}{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8DF3BDLM7jAMtq66zRP-5WBLSySMjCo8&libraries=places"
+        type="text/javascript"></script>
+    <script type="text/javascript">
+        setTimeout(function () {
+            var pos = {lat: 55.750385, lng: 37.615446};
+            var map = new google.maps.Map(document.getElementById('map'),
+                {zoom: 15,
+                center: pos,
+                mapTypeId: 'satellite'
+                });
+            var marker = new google.maps.Marker({position: pos, map: map});
+        }, 1000);
+        {#document.addEventListener('DOMContentLoaded', function () {#}
+        {#    var pos = {lat: 55.750385, lng: 37.615446};#}
+        {#    var map = new google.maps.Map(document.getElementById('map'), {zoom: 12, center: pos});#}
+        {#    var marker = new google.maps.Marker({position: pos, map: map});#}
+
+        </script>
+{% endblock %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
 
 {% block content %}
 
     <div class="uk-container">
-        <div class="uk-heading-medium">
-            head
+        <div class="uk-h4 uk-text-muted uk-text-light">О нас</div>
+        <div class="uk-text-middle">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+            deserunt mollit anim id est laborum.
         </div>
 
-        <div class="">
-            Text
+        <hr>
+
+        <div id="map" class="uk-align-center uk-padding-small" style="width: 95%; height: 50%;">
         </div>
+
     </div>
 
 {% endblock %}
+

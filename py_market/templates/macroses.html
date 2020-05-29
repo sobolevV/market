@@ -1,0 +1,95 @@
+
+{# SHOW PRODUCT CART #}
+{% macro show_product(product) %}
+    <div class="uk-card uk-card-default">
+        <div class="uk-card-media-top">
+            {% if product.photos|length  >= 1%}
+                {% with preview = product.photos[0].path %}
+
+                    <img class="uk-align-center fill-img"
+                     src="{{url_for('static', filename=preview) }}"
+                     alt="alt text"
+                     width="" height=""
+                     sizes="(min-width: 150px; min-height:150px;) 500px, 100vw">
+                {% endwith %}
+            {% else %}
+{#                    uk-height-max-medium#}
+                <img class=" uk-align-center"
+                     src="{{ url_for('static', filename='images/default_product.jpg') }}"
+                     alt="alt text"
+                >
+            {% endif %}
+        </div>
+
+        <div class="uk-card-header">
+            <h3 class="uk-card-title uk-text-uppercase uk-text-center">
+                {{ product.name }}
+            </h3>
+        </div>
+
+        {% if product.description  %}
+            <div class="uk-card-body uk-margin">
+                <div class="uk-text uk-text-truncate">
+                    {{ product.description }}
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="uk-card-footer">
+            <div class="uk-flex uk-flex-between uk-child-width-1-2">
+                <div>
+                    <div class="uk-text-bold uk-text-center uk-text-large">{{ product.price }} Р.</div>
+                </div>
+
+                <div>
+                    <a href=""
+                       class="uk-icon-button uk-width-1-2 uk-icon uk-float-right uk-button-primary"
+                       uk-icon="cart">
+                    </a>
+                </div>
+            </div>
+            {# url_for('add', variable=foo)#}
+
+        </div>
+        <div class="uk-width-1-1">
+            <a class="uk-button-link" href="{{ url_for('show_product_page', id=product.id) }}">
+                <button class="uk-button-large uk-button-default uk-width-1-1 uk-text-uppercase">
+                    Подробнее
+                </button>
+            </a>
+        </div>
+
+    </div>
+{% endmacro %}
+
+{# CATEGORIES AT HOME PAGE #}
+{% macro show_category(category) %}
+        <div class="uk-link-muted uk-card uk-card-large uk-width-expand home_page_menu">
+                <div class="uk-card-body uk-text-large uk-text-uppercase uk-text-middle">
+                    {{ category.name }}
+                </div>
+        </div>
+{% endmacro %}
+
+{# SHOW FLASH MESSAGES #}
+{% macro show_flashed_messages() %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == "message" %}
+                    <span class="uk-label uk-label-success">
+                        {{ message }}
+                    </span>
+                {% elif category=="warning"%}
+                    <span class="uk-label uk-label-warning">
+                        {{ message }}
+                    </span>
+                {% else %}
+                     <span class="uk-label uk-label-primary">
+                        {{ message }} 2
+                    </span>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endmacro %}

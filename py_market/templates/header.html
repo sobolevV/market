@@ -1,8 +1,11 @@
-<div class="uk-section-primary uk-preserve-color">
 
+{# TOP MENU - HEADER #}
+<div class="uk-section-primary uk-preserve-color">
     <nav uk-navbar="" class="uk-navbar-container uk-container uk-navbar-transparent">
          <div class="uk-navbar-left" aria-expanded="false">
+            {# LEFT SIDE MENU #}
              <ul class="uk-navbar-nav">
+                 {# LOGO #}
                  <li>
                     <a class="uk-navbar-item uk-logo uk-text-uppercase"
                        href="{{ url_for('home') }}"
@@ -10,60 +13,75 @@
                         Лого
                     </a>
                  </li>
-                 <li>
-                     <a class="uk-navbar-toggle" aria-expanded="false" href="#">
-                         <span uk-navbar-toggle-icon class="uk-icon uk-navbar-toggle-icon"></span>
-                         <span class="uk-margin-small-left">Меню</span>
-                     </a>
-                     <div class="uk-navbar-dropdown uk-navbar-dropdown-width-2">
-                        <div class="uk-navbar-dropdown-grid uk-child-width-1-2" uk-grid>
-                            <div>
-                                <ul class="uk-nav uk-navbar-dropdown-nav">
-                                    <li class="uk-active"><a href="#">Активный</a></li>
-                                    <li><a href="#">Ссылка</a></li>
-                                    <li class="uk-nav-header">Заголовок</li>
-                                    <li><a href="#">Ссылка</a></li>
-                                    <li><a href="#">Ссылка</a></li>
-                                    <li class="uk-nav-divider"></li>
-                                    <li><a href="#">Ссылка</a></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <ul class="uk-nav uk-navbar-dropdown-nav">
-                                    <li class="uk-active"><a href="#">Активный</a></li>
-                                    <li><a href="#">Ссылка</a></li>
-                                    <li class="uk-nav-header">Заголовок</li>
-                                    <li><a href="#">Ссылка</a></li>
-                                    <li><a href="#">Ссылка</a></li>
-                                    <li class="uk-nav-divider"></li>
-                                    <li><a href="#">Ссылка</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                 </li>
+
              </ul>
          </div>
 
-        <div class="uk-navbar-dropbar uk-drop uk-drop-boundary uk-drop-bottom-center" uk-drop="boundary: .parent; boundary-align: true; pos: bottom-justify;" style="">
+        <div class="uk-navbar-dropbar uk-drop uk-drop-boundary uk-drop-bottom-center"
+             uk-drop="boundary: .parent; boundary-align: true; pos: bottom-justify;"
+             style="">
         </div>
 
+        {# RIGHT SIDE OF MENU #}
         <div class="uk-navbar-right">
             <ul class="uk-navbar-nav">
+
                 <li>
-                    <a href="/cart" title="Корзина">
-                        <span ul-icon="cart"></span>
+                    <a href="{{ url_for('about') }}">
+                        <span class="uk-icon" uk-icon="info"></span>
+                        <span class="uk-margin-small-left">О нас</span>
                     </a>
                 </li>
 
-                <li><a href="{{ url_for('about') }}">О нас</a></li>
-                    {% if user.is_authenticated %}
-                        <li><a href="{{ url_for('cart') }}">Корзина</a></li>
-                        <li><a href="{{ url_for('profile') }}">{{ user.name }}</a></li>
-                    {% else %}
-                        <li><a href="{{ url_for('login') }}">Войти</a></li>
-                        <li><a href="{{ url_for('register') }}">Регистрация</a></li>
-                    {% endif %}
+{#                <li>#}
+{#                    <a href="/cart" title="Корзина">#}
+{#                        <span ul-icon="cart"></span>#}
+{#                    </a>#}
+{#                </li>#}
+
+                {% if user.is_authenticated %}
+                    <li>
+                        <a href="{{ url_for('cart') }}">
+                            <span class="uk-icon" uk-icon="cart"></span>
+                            <span class="uk-margin-small-left">Корзина</span>
+                        </a>
+                    </li>
+                    <li>
+
+                        {# DROPDOWN MENU #}
+                        <a uk-navbar-toggle-icon class="uk-icon uk-navbar-toggle-icon"></a>
+                        <div class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-dropdown-nav">
+                                <li>
+                                    <a href="{{ url_for('profile') }}">
+                                        <span class="uk-icon" uk-icon="user"></span>
+                                        <span class="uk-margin-small-left">{{ user.name }}</span>
+                                    </a>
+                                </li>
+                                <li class="uk-nav-divider"></li>
+                                <li>
+                                     <a href="{{ url_for('logout') }}">
+                                         <span class="uk-icon" uk-icon="sign-out"></span>
+                                         <span class="uk-margin-small-left">Выйти</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                {% else %}
+                    <li>
+                        <a class="uk-icon-link" href="{{ url_for('login') }}">
+                            <span class="uk-icon" uk-icon="sign-in"></span>
+                            <span class="uk-margin-small-left">Войти</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="uk-icon-link" href="{{ url_for('register') }}">
+                            <span class="uk-icon" uk-icon="pencil"></span>
+                            <span class="uk-margin-small-left">Регистрация</span>
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </nav>

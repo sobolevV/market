@@ -2,9 +2,29 @@
     <div class="uk-background-secondary uk-padding-large">
         <div class="uk-container ">
             <div uk-grid class="uk-grid-large@m uk-grid-row-small@s uk-grid-divider uk-child-width-expand@s uk-grid">
-                <div class="uk-first-column">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
-                <div>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
-                <div>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>
+                <div class="uk-first-column">
+                    <ul  class="uk-list">
+                         <li class="uk-text-bold">Навигация</li>
+                        <li>
+                            <a class="uk-link-muted" href="{{ url_for('home') }}">Главная</a>
+                        </li>
+                        <li>
+                            <a class="uk-link-muted" href="{{ url_for('about') }}">О нас</a>
+                        </li>
+                    </ul>
+                </div>
+                <div></div>
+                <div>
+                    <ul class="uk-list uk-iconnav uk-iconnav-vertical">
+                        <li class="uk-text-bold">Связаться с нами</li>
+                        <li>
+                            <a class="" uk-icon="icon: google"> <span >Google</span> </a>
+                        </li>
+                        <li>
+                            <a class="" uk-icon="icon: instagram"> <span >Instagram</span> </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
