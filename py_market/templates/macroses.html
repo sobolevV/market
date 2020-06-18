@@ -64,7 +64,7 @@
 
 {# SHOW PRODUCT FILTER MENU #}
 {% macro show_product_filter(filter) %}
-    <form class="uk-flex uk-flex-around uk-background-muted" method="post">
+    <form class="uk-flex uk-flex-around uk-background-muted uk-text-small" method="post">
         {{filter.hidden_tag()}}
 
         {# Product category + Materials#}
@@ -80,7 +80,7 @@
          {# Price #}
         <div class="uk-margin">
             <div class="uk-form-label uk-text-">Цена</div>
-            <div class="uk-flex-inline">
+            <div class="uk-flex-inline uk-margin">
                 <label>{{ filter.minPrice.label }}
                     {{ filter.minPrice(class_="uk-input uk-form-small") }}
                 </label>
@@ -88,6 +88,11 @@
                     {{ filter.maxPrice(class_="uk-input uk-form-small") }}
                 </label>
             </div>
+        </div>
+
+        <div class="uk-margin">
+            <div class="uk-form-label uk-text-">{{ filter.order.label }}</div>
+            {{ filter.order(class_="uk-list uk-list-collapse") }}
         </div>
 
         <div class="uk-margin uk-padding uk-padding-remove-horizontal">

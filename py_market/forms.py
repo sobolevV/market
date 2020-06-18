@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, BooleanField, SelectMultipleField, FieldList
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, BooleanField, SelectMultipleField, SelectField
 from wtforms.validators import Required, Regexp, EqualTo, InputRequired, Length, Optional, Email, ValidationError, \
     StopValidation, NumberRange
-from wtforms.widgets import CheckboxInput, ListWidget
+from wtforms.widgets import CheckboxInput, ListWidget, RadioInput
 from wtforms.widgets.html5 import NumberInput
 from flask_security.utils import verify_password
 from py_market import User, Category, Material
@@ -78,15 +78,28 @@ class MultiCheckboxField(SelectMultipleField):
         return len(self.choices)
 
 
+class SelectRadioField(SelectField):
+    widget = ListWidget(prefix_label=False)
+    option_widget = RadioInput()
+
+    def __len__(self):
+        return len(self.choices)
+
+
 class FilterProductsForm(FlaskForm):
     """Filtration for products"""
     category = MultiCheckboxField("Категория",
                                    choices=[(cat.name, cat.name) for cat in Category.query.order_by('name').all()])
     material = MultiCheckboxField("Материал",
                                    choices=[(mat.name, mat.name) for mat in Material.query.order_by('name').all()])
-    #
+
     minPrice = IntegerField(label="От", widget=NumberInput(step=1, min=0, max=100000))
     maxPrice = IntegerField(label="До", widget=NumberInput(step=1, min=0, max=100000))
+
+    order = SelectRadioField("Сортировать по", choices=[("date", "По новинкам"),
+                                                        ("price", "По возрастанию цены"),
+                                                        ("price_desc", "По убыванию цены")], default="date")
+
     submit = SubmitField("Применить", )
 
 

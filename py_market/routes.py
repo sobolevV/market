@@ -14,6 +14,7 @@ from .models import Product, Category, Material
 global filter_tables
 filter_tables = {"category", "material"}
 
+from sqlalchemy import desc
 
 @app.route('/')
 def home():
@@ -45,6 +46,14 @@ def products_filter(products_model, form):
     if form['maxPrice']:
         filtered_products = filtered_products.filter(Product.price <= int(form['maxPrice']))
 
+    if form["order"]:
+        if form["order"].startswith("price"):
+            order_column = Product.price
+        else:
+            order_column = Product.arrival_date
+        if form["order"].endswith("desc"):
+            order_column = desc(order_column)
+        filtered_products = filtered_products.order_by(order_column)
     return filtered_products.all()
 
 
