@@ -12,16 +12,17 @@ from flask_admin import form
 
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
-
+from itsdangerous.serializer import Serializer
 from pathlib import Path, PurePath
 from py_market.models import *
 import os
 # import random
 import os.path as op
-from PIL import Image
+from PIL import Image, ImageOps
 
 IMAGE_DIR_PRODUCTS = Path(op.curdir).joinpath(Path("py_market\\static\\"))
 print("IMAGES PATH " + str(IMAGE_DIR_PRODUCTS))
+safe_url = Serializer("image-key")
 
 
 class BaseView(ModelView):
@@ -45,21 +46,22 @@ class RoleView(ModelView):
     column_list = ('name', 'description')
 
 
-class MyImageUploadField(ImageUploadField):
-    # super(ImageUploadField, self)._save_file(data, filename, **kwargs)
-    def _get_path(self, filename):
-        if not self.base_path:
-            raise ValueError('FileUploadField field requires base_path to be set.')
-
-        # if callable(self.base_path):
-        #     return op.join(self.base_path(), filename)
-        # return op.join(self.base_path, filename)
-        return filename
-
-
 def image_name_gen(obj, file_data):
     root, ext = op.splitext(file_data.filename)
-    return secure_filename(f"product-{root}{ext}")
+    root = safe_url.dumps(root)
+    return secure_filename(f"p-{root}{ext}")
+
+
+class MyImageUploadField(ImageUploadField):
+    def _save_image(self, image, path, format='JPEG'):
+        squared_size = max(image.size[0], image.size[1])
+        image = ImageOps.fit(image, (squared_size, squared_size), Image.ANTIALIAS)
+        self.image = image
+        if image.mode not in ('RGB', 'RGBA'):
+            image = image.convert('RGBA')
+
+        with open(path, 'wb') as fp:
+            image.save(fp, format)
 
 
 class ProductView(ModelView):
@@ -71,7 +73,7 @@ class ProductView(ModelView):
     column_sortable_list = ("name", "arrival_date")
     inline_models = [(ProductPhoto,
                       dict(form_extra_fields={
-                            'path': ImageUploadField(label='Image',
+                            'path': MyImageUploadField(label='Image',
                                                      base_path=str(IMAGE_DIR_PRODUCTS),
                                                      relative_path='images/products/',
                                                      namegen=image_name_gen,

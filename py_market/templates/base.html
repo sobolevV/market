@@ -1,5 +1,5 @@
 {# BASE - PARENT PAGE #}
-{% from "macroses.html" import show_flashed_messages with context %}
+{% from "macroses.html" import show_flashed_messages, show_product_filter with context %}
 
 <html lang="ru">
     <head>
@@ -20,13 +20,20 @@
             {% include "header.html" with context %}
         {% endblock %}
 
-        <div offset-bottom uk-height-viewport class="uk-container uk-margin-top uk-margin-auto-bottom">
+        <div offset-bottom class="uk-container uk-margin-top uk-margin-auto-bottom">
             {{ show_flashed_messages() }}
 
-            {% block content %}
-            {% endblock %}
-
+            {% if info %}
+                <div class="uk-container-small uk-position-center">{{ info }} </div>
+            {% endif %}
         </div>
+
+        <div offset-bottom uk-height-viewport class="uk-container uk-margin-small">
+            {% block content %}
+
+            {% endblock %}
+        </div>
+
 
         <div id="footer"  class="uk-margin-top uk-visible@s">
             {% block footer %}

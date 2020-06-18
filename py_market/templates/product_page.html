@@ -43,27 +43,36 @@
                 <hr>
                 {# ANOTHER DESCRIPTION #}
                 <div class="">
+                    {# DESCRIPTION #}
                     {% if product.description %}
-                        <p class="uk-text-muted uk-text-middle">Описание:</p>
+                        <label class="uk-text-bold">Описание: </label>
                         <span class="uk-text-light ">{{ product.description }}</span>
                     {% endif %}
                     {# PRODUCT MATERIAL #}
                     {% if product.material|length >= 1 %}
-                        {% for materials in product.material|groupby("name") %}
-                            <p class="uk-text-muted uk-text-middle">
-                                Материал: {{ materials.list|join(", ") }}
-                            </p>
-                        {% endfor %}
+                        <label class="uk-text-bold">Материал: </label>
+                        <p class="uk-text-muted uk-text-middle">
+                            {% for materials in product.material|groupby("name") %}
+                                {{ materials.list|join(", ") }}
+                            {% endfor %}
+                        </p>
                     {% endif %}
+                    {# DESCRIPTION #}
+                    {#                #}
+
                     {# PRODUCT CATEGORY #}
                     {% if product.category|length %}
                         <p class="uk-text-muted uk-text-middle">
-                            Категория: {{ product.category.name }}
-                        </p>
+                            <label class="uk-text-bold">Категория: </label>
+                            {% for category in product.category|groupby("name") %}
+                                {{ category.list|join(",") }}
+                            {% endfor %}
+                         </p>
                     {% endif %}
                     {# PRODUCT DATE ADD #}
                     <p class="uk-text-muted uk-text-middle">
-                        Дата добавления: {{ product.arrival_date }}
+                        <label class="uk-text-bold">Дата добавления: </label>
+                        {{ product.arrival_date }}
                     </p>
                 </div>
             </div>

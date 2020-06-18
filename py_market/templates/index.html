@@ -1,6 +1,6 @@
 {# HOME PAGE #}
 {% extends "base.html" %}
-{% from "macroses.html" import show_product, show_category with context %}
+{% from "macroses.html" import show_product, show_category, show_product_filter with context %}
 
 {# ADD FONT #}
 {% block head %}
@@ -8,15 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200&display=swap" rel="stylesheet">
 {% endblock %}
 
-{# ? #}
-{% with user = user %}
-{% endwith %}
-
 {# BODY #}
 {% block content %}
-    {% if info %}
-        <div class="uk-container-small uk-position-center">{{ info }} </div>
-    {% endif %}
 
     {% if categories|length >= 1 %}
         <div class="uk-margin-medium">
@@ -26,17 +19,37 @@
                     {{ show_category(category) }}
                 {% endfor %}
             </div>
-
         </div>
     {% endif %}
 
-    <div class="uk-grid uk-child-width-1-3@m uk-child-width-2-3@s" uk-height-match=".uk-card" uk-grid>
+    {# Start grid for 2 columns #}
+{#    {% if filter and products %} <div uk-grid class="uk-flex"> {% endif %}#}
 
-            {% for product in products %}
-                <div>
-                    {{ show_product(product) }}
-                </div>
-            {% endfor %}
+    {# First column #}
+    {% if filter %}
+        <div class="uk-flex-row uk-flex-between">
+            {# uk-width-1-5@m uk-width-1-5@xl uk-width-1-5@l uk-width-1-1@s  uk-margin-right #}
+            <div class="">
+                {{ show_product_filter(filter) }}
+            </div>
+        </div>
+    {% endif %}
 
-    </div>
+    {# Second column #}
+    {% if products %}
+{#            <div class="uk-width-4-5@m uk-width-4-5@xl uk-width-4-5@l uk-width-1-1@s">#}
+{#        uk-child-width-1-4@xl uk-child-width-1-3@l uk-child-width-1-3@m  uk-child-width-1-1@s#}
+        <div uk-grid class="uk-grid uk-child-width-1-3"
+             uk-height-match=".uk-card" uk-grid>
+                {% for product in products %}
+                    <div>
+                        {{ show_product(product) }}
+                    </div>
+                {% endfor %}
+        </div>
+    {% endif %}
+
+    {# Close grid for 2 columns #}
+    {# {% if filter and products %} </div> {% endif %}#}
+
 {% endblock %}

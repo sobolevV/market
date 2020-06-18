@@ -4,13 +4,13 @@
              #main_block{
                  font-family: Monospace;
                  text-align: center;
-                 background: rgb(50, 97, 226);
+                 background: rgb(15, 147, 226);
                  padding: 3em;
              }
              .text-color{ color: #c7c6db;}
              a{
                  text-decoration: none;
-                 color: #c7c6db;
+                 color: #51db5c !important;
              }
         </style>
     </head>
@@ -20,8 +20,9 @@
             Здравствуйте, {{username}}
           </h1>
           <span class="text-color" style="font-size: 1.25em">
-          Вы были зарегистрированы на сайте {{name}}.<br>
-          Для подтверждения электронной почты перейдите по <a href={{link}}>ссылке</a>
+              Вы были зарегистрированы на сайте {{name}}.<br>
+              Для подтверждения электронной почты перейдите по <a href={{link}}>ссылке</a>
           </span>
+        <p class="text-color">*Подтвердите свою регистрацию в течении {{ confirm_time }} часов.</p>
     </div>
 </html>

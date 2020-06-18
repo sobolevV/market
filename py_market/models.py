@@ -7,7 +7,7 @@ ROLE_USER = "user"
 ROLE_ADMIN = "admin"
 
 # roles_users many_to_many
-roles_users = db.Table("roles_users",
+roles_users = db.Table("roles_users", db.metadata,
                        db.Column('user_id', db.Integer, db.ForeignKey('User.id')),
                        db.Column('role_id', db.Integer, db.ForeignKey('Role.id'))
                        )
@@ -87,6 +87,10 @@ class Address(db.Model):
 #                               db.Column('product_id', db.Integer, db.ForeignKey("Product.id")),
 #                               db.Column('material_id', db.Integer, db.ForeignKey("Material.id")))
 
+products_categories = db.Table("products_categories", db.metadata,
+                                db.Column('product_id', db.Integer, db.ForeignKey('Product.id')),
+                                db.Column('category_id', db.Integer, db.ForeignKey('Category.id'))
+                                )
 
 class Product(db.Model):
     """Product"""
@@ -99,11 +103,6 @@ class Product(db.Model):
     description = db.Column(db.String(200))
     arrival_date = db.Column(db.Date(), default=date.today())
 
-    # category = db.Column(db.Integer, db.ForeignKey("Category.id"))
-    # material = db.Column(db.Integer, db.ForeignKey("Material.id"))
-    # photos_id = db.Column(db.Integer, db.ForeignKey("ProductPhoto.id"))
-    # photos = db.relationship("ProductPhoto", backref="product", lazy=False, foreign_keys=[photos_id])
-
 
 class Material(db.Model):
     """Product materials"""
@@ -112,7 +111,12 @@ class Material(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     product_id = db.Column(db.Integer, db.ForeignKey("Product.id"))
-    products = db.relationship("Product", backref="material", lazy="subquery", foreign_keys=[product_id])
+    products = db.relationship("Product",
+                               backref=db.backref("material", lazy="select", uselist=True),
+                               lazy="subquery",
+                               foreign_keys=[product_id],
+                               uselist=True)
+
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(100), nullable=True)
 
@@ -123,8 +127,14 @@ class Category(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey("Product.id"))
-    products = db.relationship("Product", backref="category", lazy="subquery", foreign_keys=[product_id])
+    products = db.relationship("Product",
+                               backref=db.backref("category", lazy="select", uselist=True),
+                               secondary=products_categories,
+                               uselist=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
+
+    def __repr__(self):
+        return f"{self.name}"
 
 
 class ProductPhoto(db.Model):
@@ -134,7 +144,9 @@ class ProductPhoto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     path = db.Column(db.String(250))
     products = db.Column(db.Integer, db.ForeignKey(Product.id))
-    product = db.relationship(Product, backref=db.backref("photos", lazy="subquery"), foreign_keys=[products])
+    product = db.relationship(Product,
+                              backref=db.backref("photos", lazy="subquery"),
+                              foreign_keys=[products])
 
     def __repr__(self):
         return f"<ProductPhoto: {self.path}>"

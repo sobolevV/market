@@ -12,8 +12,12 @@ from flask_mail import Message
 from flask_security.utils import login_user, logout_user, hash_password
 from itsdangerous.url_safe import URLSafeTimedSerializer
 from itsdangerous.exc import BadSignature, SignatureExpired
+from jinja2 import Markup
 from datetime import datetime
 
+confirm_time = 3  # hours
+invalid_token_markup = Markup(f"""<h3>Время для подтверждения истекло</h3><br>
+                                  Проведите повторную регистрацию для подтверждения""")
 signer = URLSafeTimedSerializer(secret_key=app.config.get("SECRET_KEY"))
 
 
@@ -51,7 +55,8 @@ def register():
                           recipients=[user.email],
                           html=render_template("mail.html", username=user.name,
                                                name="TestName",
-                                               link=confirm_link))
+                                               link=confirm_link,
+                                               confirm_time=confirm_time))
             mail.send(msg)
 
             return redirect(url_for("login"))
@@ -88,27 +93,39 @@ def login():
 
 @app.route("/user_confirm/<string:token>")
 def activate_user(token):
-    # data = None
-    try:
-        data = signer.loads(token)
-    except Exception as ex:
-        print(ex)
-        return abort(404)
 
+    try:
+        data = signer.loads(token, max_age=confirm_time*60*60)
+    except (Exception, BadSignature, SignatureExpired) as ex:
+        print(ex)
+        # again try load data
+        data = signer.loads(token)
+        try:
+            # get user from DB
+            tmp_user = User.query.get_or_404(data["id"])
+            db.session.delete(tmp_user)
+            db.session.commit()
+        except Exception as e:
+            print(e)
+        # Invalid token data
+        return render_template("base.html", info=invalid_token_markup)
+
+    # Valid token
     token_user_id, token_user_email = data["id"], data["email"]
     user = User.query.get_or_404(token_user_id)
     if user.email == token_user_email:
         # User confirmed email
         user.auth_user()
         login_user(user)
-        # set user to global variable
-        g.user = current_user
-        return redirect(home)
+        return redirect('home')
+    return render_template("base.html", info="Sorry. Bad user token id")
 
 
 @app.route("/logout")
 @login_required
 def logout():
+    # Delete user data from session
     logout_user()
+    # Delete from context
     del g.user
     return redirect('home')
