@@ -5,18 +5,11 @@
 .home_page_menu{
     background-color: #a4e35c;
     color: white!important;
-    font-family: 'Exo 2', sans-serif !important;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all .4s;
-    transform: scale(1);
 }
 
 .home_page_menu:hover{
-    transition: all .4s;
-    transform: scale(1.05);
-    box-shadow: 0 6px 5px 0px rgba(0,0,0,0.5);
-    z-index: 2;
+    background-color: #a4e35c!important;
+    color: white!important;
 }
 
 button{

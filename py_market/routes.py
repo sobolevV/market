@@ -31,9 +31,9 @@ def products_filter(products_model, form):
     filtered_products = products_model.query
 
     # Check activated filters by user
-    for key in form.keys():
+    for key in filter_tables:
         # if user selected any item by key
-        if key in filter_tables and len(form.getlist(key)) > 0:
+        if key in form.data.keys() and len(form.data[key]) > 0:
             if key.title() == Category.__tablename__:
                 categories = Product.category.any(Category.name.in_(form.getlist(key)))
                 filtered_products = filtered_products.filter(categories)
@@ -41,34 +41,35 @@ def products_filter(products_model, form):
                 materials = Product.category.any(Material.name.in_(form.getlist(key)))
                 filtered_products = filtered_products.filter(materials)
 
-    if form['minPrice']:
-        filtered_products = filtered_products.filter(Product.price >= int(form['minPrice']))
-    if form['maxPrice']:
-        filtered_products = filtered_products.filter(Product.price <= int(form['maxPrice']))
+    if form.data['minPrice']:
+        filtered_products = filtered_products.filter(Product.price >= int(form.data['minPrice']))
+    if form.data['maxPrice']:
+        filtered_products = filtered_products.filter(Product.price <= int(form.data['maxPrice']))
 
-    if form["order"]:
-        if form["order"].startswith("price"):
+    if form.data["order"]:
+        if form.data["order"].startswith("price"):
             order_column = Product.price
         else:
             order_column = Product.arrival_date
-        if form["order"].endswith("desc"):
+        if form.data["order"].endswith("desc"):
             order_column = desc(order_column)
         filtered_products = filtered_products.order_by(order_column)
     return filtered_products.all()
 
 
-@app.route('/products/category=<string:category_name>', methods=["POST", "GET"])
+@app.route('/products/page=<int:page>', methods=["POST", "GET"])
 @app.route('/products/', methods=["POST", "GET"])
-def product_filter(category_name=None):
+def product_filter(page=1):
     """Page with filtered products"""
-    # form = request.form
-    form_filter = FilterProductsForm(request.form)
-    if category_name is not None:
-        form_filter.category.data = form_filter.category.data + [category_name]
-        return redirect("/products")
+
+    # if category_name is not None:
+    #     form_filter.category.data = form_filter.category.data + [category_name]
+    # return redirect("/products").set_data()
     if request.method == "POST":
-        target_products = products_filter(Product, request.form)
+        form_filter = FilterProductsForm(request.form)
+        target_products = products_filter(Product, form_filter)
     else:
+        form_filter = FilterProductsForm(request.form)
         target_products = Product.query.all()
 
     return render_template("index.html", products=target_products, filter=form_filter)
@@ -121,6 +122,11 @@ def page_not_found(e):
     """Not found page"""
     return render_template('index.html', info="404 Error"), 404
 
+
+@app.errorhandler(400)
+def page_not_found(e):
+    """Not found page"""
+    return render_template('index.html', info="404 Error"), 400
 
 @app.errorhandler(500)
 def server_error(e):

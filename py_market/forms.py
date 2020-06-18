@@ -102,4 +102,6 @@ class FilterProductsForm(FlaskForm):
 
     submit = SubmitField("Применить", )
 
+    def getlist(self, key):
+        return self[key].data
 

@@ -123,13 +123,26 @@
 
 
 {# CATEGORIES AT HOME PAGE #}
-{% macro show_category(category) %}
-    <a class="uk-link-toggle uk-card-default uk-card uk-card-body uk-padding-remove uk-width-expand"
-       href="{{ url_for('product_filter', category_name=category.name) }}">
-        <div class="uk-card-title uk-text-center uk-padding-large home_page_menu uk-height-1-1 uk-text-uppercase">
-             {{ category.name }}
-        </div>
-    </a>
+{% macro show_categoryes(category) %}
+    <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-center uk-text-center uk-text-uppercase" uk-grid
+         style="color: white">
+        {#  uk-card-default uk-card-body uk-padding-remove uk-width-expand  #}
+        {% for category in categories %}
+{#            <a class="uk-link-toggle uk-card-body uk-card-hover home_page_menu"#}
+{#               href="{{ url_for('product_filter', category_name=category.name) }}">#}
+{#                {{ category.name }}#}
+            {# <div class="uk-card-title uk-text-center uk-padding-large home_page_menu uk-height-1-1 uk-text-uppercase">#}
+            {# </div>#}
+{#            </a>#}
+            <form method="post" class="uk-link-toggle uk-card-hover uk-first-column"
+                  action="{{ url_for('product_filter', page=1) }}">
+                <input type="hidden" value="{{ csrf_token() }}" name="csrf_token">
+                <input type="hidden" value="{{category.name}}"  name="category">
+                <input type="submit" value="{{category.name}}"
+                       class="uk-button uk-width-1-1 uk-button-large uk-padding-small home_page_menu">
+            </form>
+        {% endfor %}
+    </div>
 {% endmacro %}
 
 {# SHOW FLASH MESSAGES #}
