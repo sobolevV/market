@@ -1,76 +1,132 @@
+{% macro render_pagination(pagination, endpoint) %}
+    <hr>
+    <ul class="uk-pagination uk-flex-center uk-margin-medium-top" uk-margin>
+        {% if pagination.has_prev %}
+            <li class="uk-margin-auto-vertical">
+                <button class="uk-button uk-button-text uk-text-muted"
+                        onclick="getPage(this, '{{ url_for("products") }}', {{ pagination.prev_num }})">
+                    <span uk-pagination-previous></span>
+                </button>
+                {# <a href="{{url_for(endpoint, page=pagination.prev_num)}}"><span uk-pagination-previous></span></a>#}
+            </li>
+        {% endif %} 
+
+        {%- for page in pagination.iter_pages() %}
+            {% if page %}
+                {% if page != pagination.page %}
+                    <li>
+{#            href="{{ url_for(endpoint) }}"#}
+                        <button class="uk-button uk-button-text"
+                           onclick="getPage(this, '{{ url_for("products") }}', {{ page }})">
+                            {{ page }}
+                        </button>
+                    </li>
+                {% else %}
+                    <li class="uk-active">
+                        <button class="uk-button uk-button-text uk-disabled">{{ page }}</button>
+                    </li>
+                {% endif %}
+            {% else %}
+                <li class="uk-disabled "><span>...</span></li>
+            {% endif %}
+        {%- endfor %}
+
+        {% if pagination.has_next %}
+            <li class="uk-margin-auto-vertical">
+                <button class="uk-button uk-button-text uk-text-muted"
+                        onclick="getPage(this, '{{ url_for("products") }}', {{ pagination.next_num }})">
+                    <span uk-pagination-next></span>
+                </button>
+                {# <a href="{{url_for(endpoint, page=pagination.next_num)}}"><span uk-pagination-next></span></a>#}
+            </li>
+        {% endif %}
+    </ul>
+{% endmacro %}
 
 {# SHOW PRODUCT CART #}
-{% macro show_product(product) %}
-    <div class="uk-card uk-card-default">
-        <div class="uk-card-media-top">
-            {% if product.photos|length  >= 1%}
-                {% with preview = product.photos[0].path %}
-                    <img class="uk-align-center fill-img"
-                     src="{{url_for('static', filename=preview) }}"
-                     alt="alt text"
-                     sizes="(min-width: 150px; min-height:250px;) 500px, 100vw">
-                {% endwith %}
-            {% else %}
-            {# uk-height-max-medium#}
-            <img class=" uk-align-center"
-                 src="{{ url_for('static', filename='images/default_product.jpg') }}"
-                 alt="alt text">
-            {% endif %}
-        </div>
+{% macro show_products(products) %}
+    {% if products %}
+        <div id="products" uk-grid class="uk-grid uk-flex-center uk-child-width-1-3@m uk-child-width-1-4@l"
+             uk-height-match=".uk-card">
+            {% for product in products %}
+                <div>
+                    <div class="uk-card uk-card-default">
+                        <div class="uk-card-media-top">
+                            {% if product.photos|length  >= 1%}
+                                {% with preview = product.photos[0].path %}
+                                    <img class="uk-align-center fill-img"
+                                     src="{{url_for('static', filename=preview) }}"
+                                     alt="alt text"
+                                     sizes="(min-width: 150px; min-height:250px;) 500px, 100vw">
+                                {% endwith %}
+                            {% else %}
+                            {# uk-height-max-medium#}
+                            <img class=" uk-align-center"
+                                 src="{{ url_for('static', filename='images/default_product.jpg') }}"
+                                 alt="alt text">
+                            {% endif %}
+                        </div>
 
-        {# EDIT SHOW DESCRIPTION #}
-        {#        {% if product.description  %}#}
-        {#            <div class="uk-card-body uk-margin" uk-height-match=".uk-card-body">#}
-        {#                    <div class="uk-text uk-text-truncate">#}
-        {#                        {{ product.description }}#}
-        {#                    </div>#}
-        {#            </div>#}
-        {#        {% endif %}#}
+                        {# EDIT SHOW DESCRIPTION #}
+                        {#        {% if product.description  %}#}
+                        {#            <div class="uk-card-body uk-margin" uk-height-match=".uk-card-body">#}
+                        {#                    <div class="uk-text uk-text-truncate">#}
+                        {#                        {{ product.description }}#}
+                        {#                    </div>#}
+                        {#            </div>#}
+                        {#        {% endif %}#}
 
-        <div class="uk-width-1-1">
-            <div class="uk-card-header">
-                <h3 class="uk-card-title uk-text-uppercase uk-text-center">
-                    {{ product.name }}
-                </h3>
-            </div>
+                        <div class="uk-width-1-1">
+                            <div class="uk-card-header">
+                                <h3 class="uk-card-title uk-text-uppercase uk-text-center">
+                                    {{ product.name }}
+                                </h3>
+                            </div>
 
-            <div class="uk-card-footer">
-                <div class="uk-flex uk-flex-between uk-child-width-1-2">
-                    <div>
-                        <div class="uk-text-bold uk-text-center uk-text-large">{{ product.price }} Р.</div>
-                    </div>
+                            <div class="uk-card-footer">
+                                <div class="uk-flex uk-flex-between uk-child-width-1-2">
+                                    <div>
+                                        <div class="uk-text-bold uk-text-center uk-text-large">{{ product.price }} Р.</div>
+                                    </div>
 
-                    <div>
-                        <a href=""
-                           class="uk-icon-button uk-width-1-2 uk-icon uk-float-right uk-button-primary"
-                           uk-icon="cart">
-                        </a>
-                    </div>
-                </div>
-                {# url_for('add', variable=foo)#}
+                                    <div>
+                                        <a href=""
+                                           class="uk-icon-button uk-width-1-2 uk-icon uk-float-right uk-button-primary"
+                                           uk-icon="cart">
+                                        </a>
+                                    </div>
+                                </div>
+                                {# url_for('add', variable=foo)#}
 
-            </div>
-            <div class="uk-width-1-1">
-                <a class="uk-button-link" href="{{ url_for('show_product_page', id=product.id) }}">
-                    <button class="uk-button-large uk-button-default uk-width-1-1 uk-text-uppercase">
-                        Подробнее
-                    </button>
-                </a>
-            </div>
-        </div>
+                            </div>
+                            <div class="uk-width-1-1">
+                                <a class="uk-button-link" href="{{ url_for('show_product_page', id=product.id) }}">
+                                    <button class="uk-button-large uk-button-default uk-width-1-1 uk-text-uppercase">
+                                        Подробнее
+                                    </button>
+                                </a>
+                            </div>
+                        </div>
 
-    </div>
+                    </div> {# Product card block #}
+                </div> {# Empdy div block #}
+        {% endfor %} {# Products loop for #}
+        </div> {# Grid block #}
+    {% endif %}
 {% endmacro %}
 
 {# SHOW PRODUCT FILTER MENU #}
 {% macro show_product_filter(filter) %}
-    <form class="uk-flex uk-flex-around uk-background-muted uk-text-small" method="post">
-        {{filter.hidden_tag()}}
+    <form if="filter" class="uk-flex uk-flex-around uk-background-muted uk-text-small"
+          method="get" action="{{ url_for('products', page=1) }}">
+
+        {# action="{{url_for("products", page=1)}}"#}
+{#        {{filter.hidden_tag()}}#}
 
         {# Product category + Materials#}
         {% for field in [filter.category, filter.material] %}
             {% if field|length %}
-                <div class="uk-margin">
+                <div class="uk-margin uk-margin-top">
                     <div class="uk-form-label">{{ field.label  }}</div>
                     {{ field(class_="uk-list uk-list-collapse") }}
                 </div>
@@ -96,7 +152,10 @@
         </div>
 
         <div class="uk-margin uk-padding uk-padding-remove-horizontal">
-                {{ filter.submit(class_="uk-button-primary uk-button-large uk-width1-1") }}
+            <button onclick="applyFilter('{{ url_for("products") }}')"
+                    class="uk-button-primary uk-button-large uk-width1-1">
+                Применить
+            </button>
         </div>
 
             {# Seazon #}
@@ -123,25 +182,26 @@
 
 
 {# CATEGORIES AT HOME PAGE #}
-{% macro show_categoryes(category) %}
-    <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-center uk-text-center uk-text-uppercase" uk-grid
+{% macro show_categories(categories) %}
+{#  uk-child-width-1-2@s  #}
+    <div class="uk-grid-collapse uk-child-width-expand@m  uk-child-width-1-1@s
+                uk-flex-center uk-text-center uk-text-uppercase" uk-grid
          style="color: white">
         {#  uk-card-default uk-card-body uk-padding-remove uk-width-expand  #}
         {% for category in categories %}
-{#            <a class="uk-link-toggle uk-card-body uk-card-hover home_page_menu"#}
-{#               href="{{ url_for('product_filter', category_name=category.name) }}">#}
-{#                {{ category.name }}#}
-            {# <div class="uk-card-title uk-text-center uk-padding-large home_page_menu uk-height-1-1 uk-text-uppercase">#}
-            {# </div>#}
-{#            </a>#}
-            <form method="post" class="uk-link-toggle uk-card-hover uk-first-column"
-                  action="{{ url_for('product_filter', page=1) }}">
-                <input type="hidden" value="{{ csrf_token() }}" name="csrf_token">
+            <form method="get" class="uk-link-toggle uk-card-hover uk-first-column"
+                  action="{{ url_for('products', page=1) }}">
+{#                <input type="hidden" value="{{ csrf_token() }}" name="csrf_token">#}
                 <input type="hidden" value="{{category.name}}"  name="category">
                 <input type="submit" value="{{category.name}}"
                        class="uk-button uk-width-1-1 uk-button-large uk-padding-small home_page_menu">
             </form>
         {% endfor %}
+        <a href="{{ url_for('products', page=1) }}" class="uk-link-toggle uk-card-hover uk-first-column">
+            <button class="uk-button uk-width-1-1 uk-button-large uk-padding-small home_page_menu">
+                Показать все
+            </button>
+        </a>
     </div>
 {% endmacro %}
 

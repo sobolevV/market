@@ -5,11 +5,15 @@
 .home_page_menu{
     background-color: #a4e35c;
     color: white!important;
+    transform: scale(1);
+    transition: linear 1s;
 }
 
 .home_page_menu:hover{
     background-color: #a4e35c!important;
     color: white!important;
+    transform: scale(1.02);
+    transition: linear 0.3s;
 }
 
 button{

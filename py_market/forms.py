@@ -6,6 +6,7 @@ from wtforms.widgets import CheckboxInput, ListWidget, RadioInput
 from wtforms.widgets.html5 import NumberInput
 from flask_security.utils import verify_password
 from py_market import User, Category, Material
+import inspect
 
 password_len = 6
 
@@ -32,11 +33,6 @@ class CustomRegisterForm(FlaskForm):
                                                                                  message="Пароли не совпадают.")])
     # sex = RadioField("Пол", choices=[("male", "Мужской"), ("female", "Женский")], validators=[Optional()])
     submit = SubmitField("Регистрация")
-
-    # @staticmethod
-    # def validate_email(email_field):
-    #     if User.query.filter_by(email=email_field.data).first():
-    #         raise ValidationError(message="Пользователь с таким Email уже существует")
 
 
 class CustomLoginForm(FlaskForm):
@@ -88,8 +84,12 @@ class SelectRadioField(SelectField):
 
 class FilterProductsForm(FlaskForm):
     """Filtration for products"""
-    category = MultiCheckboxField("Категория",
-                                   choices=[(cat.name, cat.name) for cat in Category.query.order_by('name').all()])
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(self, **kwargs)
+    #     keys = self.keys()
+
+    category = MultiCheckboxField("Категория", _prefix="category[]",
+                                   choices=[(cat.name, cat.name) for cat in Category.query.order_by('name').all()],)
     material = MultiCheckboxField("Материал",
                                    choices=[(mat.name, mat.name) for mat in Material.query.order_by('name').all()])
 
@@ -100,8 +100,48 @@ class FilterProductsForm(FlaskForm):
                                                         ("price", "По возрастанию цены"),
                                                         ("price_desc", "По убыванию цены")], default="date")
 
-    submit = SubmitField("Применить", )
+    # submit = SubmitField("Применить")
+
+    def from_dict(self, dict_obj):
+        if "csrf_token" in dict_obj:
+            del dict_obj["csrf_token"]
+
+        for key, val in dict_obj.items():
+            if key in self.data:
+                try:
+                    attr = getattr(self, key)
+                    if isinstance(val, (str, list)) and len(val) == 0:
+                        attr.data = None
+                    elif isinstance(val, list) and len(val) == 1:
+                        if len(val[0]):
+                            attr.data = val[0]
+                        else:
+                            attr.data = None
+                    else:
+                        attr.data = val
+                except Exception as e:
+                    print(e)
+        return self
 
     def getlist(self, key):
-        return self[key].data
+        if isinstance(self[key].data, list):
+            return self[key].data
+        return [self[key].data]
+
+    @classmethod
+    def items(cls):
+        return dict(inspect.getmembers(cls, lambda atr: not inspect.isroutine(atr)))
+
+    @classmethod
+    def keys(cls):
+        return set(cls.items().keys())
+
+    def __getitem__(self, item):
+        try:
+            return getattr(self, item).data
+        except KeyError() as ex:
+            print(ex)
+            return None
+
+
 
