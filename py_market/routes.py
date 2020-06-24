@@ -2,7 +2,7 @@ from py_market import app, security, admin, g, flash, request
 from py_market import Product
 from  py_market.forms import FilterProductsForm
 
-from flask import Flask, g, flash, url_for, redirect, request, render_template, abort, session
+from flask import Flask, g, flash, url_for, redirect, request, render_template, abort, session, send_from_directory
 from flask_security.decorators import login_required, roles_required
 from flask_security.core import current_user
 from flask_login import login_user, logout_user
@@ -11,12 +11,17 @@ from flask_wtf import FlaskForm
 # from .auth_routes import register, login
 from .models import Product, Category, Material
 from sqlalchemy import desc
-
+import os
 global filter_tables, form_filter
 
 form_filter = None
 filter_tables = {"category", "material"}
 
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static\\images'),
+                               'icon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/home')
 @app.route('/')
@@ -61,12 +66,11 @@ def products_filter(products_model, form_data):
     return filtered_products
 
 
-@app.route('/products/page=<int:page>', methods=["POST", "GET"])
+# @app.route('/products/page=<int:page>', methods=["POST", "GET"])
 @app.route('/products/', methods=["POST", "GET"])
-def products(page=1):
-    global form_filter
+def products():
     """Page with filtered products"""
-
+    page = 1
     # Get arguments for filtering
     request_args = request.args.to_dict(flat=False)
     if "page" in request_args:

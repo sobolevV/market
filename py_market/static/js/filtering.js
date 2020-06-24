@@ -6,8 +6,10 @@ function submitGetRequest(url, data){
         params: data,
         paramsSerializer: function (params) {
             return Qs.stringify(params, {arrayFormat: 'repeat'})}
-    }).then(function (response) {
+    })
+        .then(function (response) {
         if (response.status == 200){
+            window.location.href = response.request.responseURL;
             // let replace_id = "products";
             // let products_block = document.getElementById(replace_id);
             // // new data
@@ -30,14 +32,14 @@ function submitGetRequest(url, data){
 
 function applyFilter(url){
     let data = getFormData();
-    data["page"] = 1;
+    data["page"] = String(1);
     submitGetRequest(url, data);
 }
 
 function getPage(el, url, page) {
     console.log(el);
     let data = getFormData();
-    data["page"] = Number(page);
+    data["page"] = String(page);
     submitGetRequest(url, data);
 }
 
