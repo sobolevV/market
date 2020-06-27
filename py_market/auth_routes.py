@@ -1,5 +1,6 @@
-from py_market import app, security, admin, user_datastore, db, mail, g, flash, User
-
+from py_market import app, db, mail, g, flash
+from py_market import security, user_datastore
+from py_market.models import User
 from flask import Flask, url_for, redirect, request, render_template, abort
 from flask_security.decorators import login_required, roles_required
 from flask_security.core import current_user

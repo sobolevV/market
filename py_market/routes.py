@@ -1,20 +1,13 @@
-from py_market import app, security, admin, g, flash, request
-from py_market import Product
-from  py_market.forms import FilterProductsForm
-
-from flask import Flask, g, flash, url_for, redirect, request, render_template, abort, session, send_from_directory
-from flask_security.decorators import login_required, roles_required
-from flask_security.core import current_user
-from flask_login import login_user, logout_user
-from flask_login.utils import login_required, login_user
-from flask_wtf import FlaskForm
-# from .auth_routes import register, login
-from .models import Product, Category, Material
-from sqlalchemy import desc
 import os
-global filter_tables, form_filter
+from py_market import app
+from py_market.models import Product, Category, Material
+from py_market.forms import FilterProductsForm
+from flask_security.core import current_user
+from flask_login.utils import login_required, login_user, logout_user
+from sqlalchemy import desc
+from flask import g, flash, url_for, redirect, request, render_template, abort, session, send_from_directory
 
-form_filter = None
+global filter_tables
 filter_tables = {"category", "material"}
 
 
@@ -22,6 +15,20 @@ filter_tables = {"category", "material"}
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static\\images'),
                                'icon.ico', mimetype='image/vnd.microsoft.icon')
+
+
+@app.route('/editor', methods=["GET", "POST"])
+def editor():
+    # https://github.com/pavittarx/editorjs-html
+    if request.method == "POST":
+        if 'image' in request.files:
+            file = request.files
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], "filename.jpg"))
+        # if any data
+        # convert json to string
+        # save to db
+    return render_template("_empty.html")
+
 
 @app.route('/home')
 @app.route('/')
@@ -132,7 +139,8 @@ def profile():
 # Global user
 @app.before_request
 def before_request():
-    g.user = current_user
+    if current_user:
+        g.user = current_user
     # if not request.path.startswith(url_for("products")) and "form_filter" in session:
     #     del session["form_filter"]
 
@@ -140,7 +148,8 @@ def before_request():
 # Return to all templates
 @app.context_processor
 def inject_user():
-    return dict(user=g.user)
+    if current_user:
+        return dict(user=g.user)
 
 
 # Handle errors

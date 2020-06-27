@@ -1,27 +1,17 @@
+import os
 from flask_admin.contrib.sqla import ModelView
-from flask import request
-from flask_admin.contrib.sqla.fields import QuerySelectField
 from flask_admin.form.upload import ImageUploadField
 from flask_admin import form
 
-# from flask_admin.form.widgets import Select2Widget
-# from wtforms.widgets import html_params, HTMLString
-# from flask_admin.helpers import get_url
-# from flask_admin._compat import string_types, urljoin
-# from flask_admin._backwards import Markup
-
-from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from itsdangerous.serializer import Serializer
 from pathlib import Path, PurePath
-from py_market.models import *
-import os
-# import random
+from . import ProductPhoto
+
 import os.path as op
 from PIL import Image, ImageOps
 
 IMAGE_DIR_PRODUCTS = Path(op.curdir).joinpath(Path("py_market\\static\\"))
-print("IMAGES PATH " + str(IMAGE_DIR_PRODUCTS))
 safe_url = Serializer("image-key")
 
 
@@ -81,9 +71,6 @@ class ProductView(ModelView):
                                                      )})
                      )]
 
-    # form_choices = {
-    #     'my_form_field': [('material', Material.query.all()),]
-    # }
 
 
 

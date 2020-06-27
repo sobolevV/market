@@ -1,40 +1,34 @@
-from flask import Flask, g, flash, url_for, redirect, request, render_template, abort
-from flask_security.decorators import login_required, roles_required
-from flask_security.core import current_user
-from flask_login import login_user, logout_user
-
-from flask_sqlalchemy import SQLAlchemy
-from flask_security import Security, SQLAlchemyUserDatastore
-from flask_wtf.csrf import CSRFProtect
+import os
+from flask import Flask, flash, g
 from flask_admin import Admin
 from flask_mail import Mail
+from flask_security import Security, SQLAlchemyUserDatastore
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
+from flask_migrate import Migrate
+
+base_dir = os.path.abspath("./")
 
 app = Flask(__name__)
-app.jinja_env.add_extension('jinja2.ext.loopcontrols')  # controls for break and continue
-app.config.from_object('py_market.config')
+app.jinja_env.add_extension('jinja2.ext.loopcontrols')
+app.config.from_pyfile(os.path.join(base_dir, "config.py"))
 mail = Mail(app=app)
 
 # Protection CSRF Token for Flask forms
 csrf = CSRFProtect(app)
-
 # DB declaration
 db = SQLAlchemy(app)
-# db.drop_all()
-# db.metadata.clear()
-# print("metadata keys: ", db.metadata.tables.keys())
-# print("engine tables: ", db.engine.table_names())
-# print("CREATING TABLES...\nmetadata keys: ", db.metadata.tables.keys())
-# print("engine tables: ", db.engine.table_names())
+with app.app_context():
+    db.metadata.create_all(db.engine)
+    db.create_all()
 
-from .models import User, Role
-from py_market.admin_views import *
-from py_market.forms import *
-
-# security declaration
-user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore, login_form=CustomLoginForm, register_form=CustomRegisterForm)
+# Database migration
+migrate = Migrate(app, db)
 
 # Flask-admin views
+from py_market.models import *
+from py_market.admin_views import *
+
 admin = Admin(app, template_mode='bootstrap3')
 admin.add_view(UserView(User, db.session))
 admin.add_view(RoleView(Role, db.session))
@@ -42,9 +36,10 @@ admin.add_view(ProductView(Product, db.session))
 admin.add_views(BaseView(Material, db.session), BaseView(Category, db.session))
 # admin.add_view(ProductPhotoView(ProductPhoto, db.session))
 
-with app.app_context():
-    db.metadata.create_all(db.engine)
-    db.create_all()
+from py_market.forms import *
+# security declaration
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore, login_form=CustomLoginForm, register_form=CustomRegisterForm)
 
-from .routes import *
-from .auth_routes import *
+# Always at bottom
+from py_market import routes, auth_routes

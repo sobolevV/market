@@ -5,7 +5,7 @@ from wtforms.validators import Required, Regexp, EqualTo, InputRequired, Length,
 from wtforms.widgets import CheckboxInput, ListWidget, RadioInput
 from wtforms.widgets.html5 import NumberInput
 from flask_security.utils import verify_password
-from py_market import User, Category, Material
+from py_market.models import User, Category, Material
 import inspect
 
 password_len = 6
@@ -41,14 +41,6 @@ class CustomLoginForm(FlaskForm):
     password = PasswordField("Пароль *", validators=[InputRequired()])
     remember_me = BooleanField("Запомнить меня", default=False)
     submit = SubmitField("Войти")
-
-    # @staticmethod
-    # def validate_email(email_field):
-    #     user = User.query.filter_by(email=email_field.data).first()
-    #     if user is None:
-    #         raise ValidationError()
-    #     if not user.is_auth:
-    #         raise ValidationError("Пользователь еще не подтвердил свой почтовый адрес")
 
     def validate_password(self, password_field):
         user = User.query.filter_by(email=self.email.data).first()

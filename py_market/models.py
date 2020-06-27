@@ -22,6 +22,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(200), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+    last_visit = db.Column(db.Date(), nullable=True)
 
     # For Flask-login
     active = db.Column(db.Boolean())
@@ -92,6 +93,7 @@ products_categories = db.Table("products_categories", db.metadata,
                                 db.Column('category_id', db.Integer, db.ForeignKey('Category.id'))
                                 )
 
+
 class Product(db.Model):
     """Product"""
     __tablename__ = "Product"
@@ -99,7 +101,7 @@ class Product(db.Model):
 
     name = db.Column(db.String(100), nullable=False)
     # Float
-    price = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
     description = db.Column(db.String(200))
     arrival_date = db.Column(db.Date(), default=date.today())
 
