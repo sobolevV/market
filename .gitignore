@@ -1,7 +1,4 @@
 /.idea/
 /__pycache__/
-/py_market/static/
 /py_market/test.db
-/py_market/static/images/products/
-/mail_config.py
 /py_market/tmp/test.db
