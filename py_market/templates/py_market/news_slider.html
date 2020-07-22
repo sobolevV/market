@@ -1,0 +1,37 @@
+<div class="uk-position-relative uk-visible-toggle" tabindex="-1"
+     uk-slideshow="animation: push; max-height: 400; autoplay: true; finite: true; ">
+    <ul class="uk-slideshow-items">
+        {% for title_elem in titles %}
+                <li>
+                    {% if title_elem.image_url %}
+                        <img src="{{ title_elem.image_url }}" alt="" uk-cover>
+                    {% else %}
+                        <img src="{{ url_for('static', filename="/images/news/bg_news_1.jpg") }}" alt="" uk-cover>
+                    {% endif %}
+
+                    <div class="uk-position-center uk-position-small uk-padding-small
+                                uk-text-center uk-text-light uk-text-uppercase">
+                      <a class="uk-link-reset" href="{{ url_for('news', id=title_elem.id) }}">
+                          <div class="uk-margin-remove uk-text-uppercase uk-text-lead uk-button uk-button-text">
+                              {% if title_elem.title %}
+                                  {{ title_elem.title }}
+                              {% else %}
+                                  Новость № {{ title_elem.id }}
+                              {% endif %}
+                          </div>
+                      </a>
+                    </div>
+                    <div class="uk-position-bottom-center uk-position-small
+                                uk-text-light uk-text-center uk-margin-medium uk-text-lead">
+                        {{ title_elem.description }}
+                    </div>
+                </li>
+        {% endfor %}
+    </ul>
+
+    <div class="uk-light">
+        <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>
+        <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>
+    </div>
+
+</div>

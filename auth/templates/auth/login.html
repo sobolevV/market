@@ -1,8 +1,6 @@
-{% extends "base.html" %}
+{% extends "py_market/base.html" %}
 
 {% block content %}
-    {% with warnings = warnings %}
-    {% endwith %}
 
     <div class="uk-container-small uk-margin-medium uk-margin-auto uk-background-muted uk-padding" >
         {# LOGIN FORM #}
@@ -33,6 +31,8 @@
         {# END LOGIN FORM #}
 
         {# Validate login form messages #}
+        {#    {% with warnings = warnings %}
+        {#    {% endwith %}#}
         {% if warnings %}
             <ul class="uk-list">
                 {% for warning in warnings %}

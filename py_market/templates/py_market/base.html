@@ -1,5 +1,5 @@
 {# BASE - PARENT PAGE #}
-{% from "macroses.html" import show_flashed_messages, show_product_filter with context %}
+{% from "py_market/macroses.html" import show_flashed_messages with context %}
 
 <html lang="ru">
     <head>
@@ -17,27 +17,31 @@
     <body>
 
         {% block header %}
-            {% include "header.html" with context %}
+            {% include "py_market/header.html" with context %}
         {% endblock %}
 
         <div offset-bottom class="uk-container uk-margin-top uk-margin-auto-bottom">
-            {{ show_flashed_messages() }}
+
+            {% with messages = get_flashed_messages(with_categories=True) %}
+                {% if messages %}
+                    {% include "py_market/flashed_messages.html" %}
+                {% endif %}
+            {% endwith %}
 
             {% if info %}
-                <div class="uk-container-small uk-position-center">{{ info }} </div>
+                <div class="uk-container-small uk-position-center"> {{ info }} </div>
             {% endif %}
         </div>
 
         <div offset-bottom uk-height-viewport class="uk-container uk-margin-small">
             {% block content %}
-
             {% endblock %}
         </div>
 
 
         <div id="footer"  class="uk-margin-top uk-visible@s">
             {% block footer %}
-                {% include "footer.html"%}
+                {% include "py_market/footer.html"%}
             {% endblock %}
         </div>
 

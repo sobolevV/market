@@ -1,0 +1,29 @@
+{% extends "py_market/base.html" %}
+{% from "py_market/macroses.html" import show_categories %}
+{% from"products/macroses.html" import show_products %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block content %}
+    {# News block#}
+    {% if titles %}
+        {% include "py_market/news_slider.html" %}
+    {% endif %}
+    {# Home page categories #}
+    {% if categories|length >= 1 %}
+        <div class="uk-margin-medium">
+            <div class="uk-h3 uk-text-muted uk-text-center uk-text-light uk-text-uppercase">Категории</div>
+                {{ show_categories(categories) }}
+        </div>
+    {% endif %}
+
+    {# Block with last products #}
+    {% if products %}
+        {% block head %}
+            {{ super() }}
+            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+            <script type="text/javascript" src="{{ url_for('products.static', filename='/js/products_script.js') }}"></script>
+        {% endblock %}
+        {{ show_products(products, user) }}
+    {% endif %}
+{% endblock %}

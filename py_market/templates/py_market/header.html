@@ -60,7 +60,7 @@
                                 </li>
                                 <li class="uk-nav-divider"></li>
                                 <li>
-                                     <a href="{{ url_for('logout') }}">
+                                     <a href="{{ url_for('auth.logout') }}">
                                          <span class="uk-icon" uk-icon="sign-out"></span>
                                          <span class="uk-margin-small-left">Выйти</span>
                                     </a>
@@ -70,13 +70,13 @@
                     </li>
                 {% else %}
                     <li>
-                        <a class="uk-icon-link" href="{{ url_for('login') }}">
+                        <a class="uk-icon-link" href="{{ url_for('auth.login') }}">
                             <span class="uk-icon" uk-icon="sign-in"></span>
                             <span class="uk-margin-small-left">Войти</span>
                         </a>
                     </li>
                     <li>
-                        <a class="uk-icon-link" href="{{ url_for('register') }}">
+                        <a class="uk-icon-link" href="{{ url_for('auth.register') }}">
                             <span class="uk-icon" uk-icon="pencil"></span>
                             <span class="uk-margin-small-left">Регистрация</span>
                         </a>

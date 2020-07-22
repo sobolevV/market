@@ -1,17 +1,20 @@
 import os
-from flask import Flask, flash, g
+from flask import Flask, flash, g, url_for
 from flask_admin import Admin
+from flask_admin.base import MenuLink
 from flask_mail import Mail
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_migrate import Migrate
 
-base_dir = os.path.abspath("./")
+
+BASE_DIR = os.path.abspath("./")
 
 app = Flask(__name__)
 app.jinja_env.add_extension('jinja2.ext.loopcontrols')
-app.config.from_pyfile(os.path.join(base_dir, "config.py"))
+app.config.from_pyfile(os.path.join(BASE_DIR, "config.py"))
+
 mail = Mail(app=app)
 
 # Protection CSRF Token for Flask forms
@@ -25,21 +28,21 @@ with app.app_context():
 # Database migration
 migrate = Migrate(app, db)
 
-# Flask-admin views
-from py_market.models import *
-from py_market.admin_views import *
-
-admin = Admin(app, template_mode='bootstrap3')
-admin.add_view(UserView(User, db.session))
-admin.add_view(RoleView(Role, db.session))
-admin.add_view(ProductView(Product, db.session))
-admin.add_views(BaseView(Material, db.session), BaseView(Category, db.session))
-# admin.add_view(ProductPhotoView(ProductPhoto, db.session))
-
-from py_market.forms import *
 # security declaration
+from py_market.forms import CustomLoginForm, CustomRegisterForm
+from py_market.models import User, Role
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore, login_form=CustomLoginForm, register_form=CustomRegisterForm)
 
-# Always at bottom
-from py_market import routes, auth_routes
+# Routes at bottom
+from py_market import routes
+
+# Blueprints
+from auth import auth
+from my_admin import bp_admin
+from products import products
+
+app.register_blueprint(auth.bp_auth)
+app.register_blueprint(bp_admin.bp_admin)
+app.register_blueprint(products.bp_prods)
+app.add_url_rule('/', endpoint='home')

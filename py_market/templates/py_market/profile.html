@@ -1,0 +1,38 @@
+{% extends "py_market/base.html" %}
+
+{% block content %}
+    {% if current_user.is_authenticated %}
+        <div class="uk-container-small uk-width-1-2@m uk-margin-auto">
+            <h3 class="uk-h3 uk-text-uppercase">Ваши личные данные</h3>
+            <div class="uk-text-normal">
+                <ul class="uk-list uk-text-bold uk-list-striped">
+                    <li>Имя: {{ current_user.name }}</li>
+                    <li>Email: {{ current_user.email }}</li>
+                    {% if current_user.address%}
+                        <li>Адрес: {{ current_user.address }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+        <hr>
+        <div class="uk-grid uk-flex-center">
+            <div>
+                {#            {{ url_for('change_password') }}#}
+                <a class="uk-link-muted" href="#">
+                    <button class="uk-button uk-button-primary">
+                        Сменить пароль
+                    </button>
+                </a>
+            </div>
+                <a class="uk-link-muted" href="{{ url_for('auth.logout') }}">
+                    <button class="uk-button uk-button-primary">
+                        Выйти
+                    </button>
+                </a>
+            <div>
+
+            </div>
+        </div>
+        </div>
+    {% endif %}
+{% endblock %}

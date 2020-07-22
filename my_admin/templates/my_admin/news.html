@@ -1,0 +1,41 @@
+{% extends "admin/master.html"%}
+
+{#<title>{% block title %} Добавить новость {% endblock %}</title>#}
+
+{% block head %}
+    {{ super() }}
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='/css/uikit.css') }}">
+
+{% endblock %}
+
+{% block body %}
+    {% if news %}
+        <div class="uk-grid uk-flex-around uk-child-width-1-3">
+            {% for item in news %}
+                <div>
+                    <div class="uk-card uk-card-default uk-card-body">
+                        <a class="uk-link-muted" href="{{ url_for('news', id=item.id) }}">
+                            <div class="uk-card-title uk-h3">{{ item.title }}</div>
+                        </a>
+                        <div class="uk-card-media-top">
+                            <img src="{{ item.image_url }}" alt="">
+                        </div>
+                        <p class="">
+                            {% if item.description %}
+                                {{ item.description }}
+                            {% else %}
+                                Описание отсутствует
+                            {% endif %}
+                        </p>
+
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <br>
+    <a class="uk-link-muted" href="{{ url_for('news.create') }}">
+        <button class="uk-button uk-button-primary uk-button-large uk-width-1-1">Добавить новость</button>
+    </a>
+{% endblock %}

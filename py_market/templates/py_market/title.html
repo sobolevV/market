@@ -1,0 +1,10 @@
+{% extends "py_market/base.html" %}
+
+{% block content %}
+    <div class="uk-heading-line"></div>
+    <div id="title-content"></div>
+    <script>
+        titleBlock = document.getElementById("title-content")
+        titleBlock.innerHTML = '{{ title.text|safe }}'
+    </script>
+{% endblock %}

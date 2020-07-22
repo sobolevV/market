@@ -1,13 +1,16 @@
 {# HOME PAGE #}
-{% extends "base.html" %}
-{% from "macroses.html" import show_products, show_categories, show_product_filter, render_pagination with context %}
+{% extends "py_market/base.html" %}
+{% from "py_market/macroses.html" import show_categories, render_pagination with context %}
+{% from "products/macroses.html" import show_products, show_product_filter with context %}
 
-{# ADD FONT #}
+
 {% block head %}
     {{ super() }}
+    {# ADD FONT #}
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200&display=swap" rel="stylesheet">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.4/qs.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('products.static', filename='/js/products_script.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='/js/filtering.js') }}"></script>
 {% endblock %}
 
@@ -24,11 +27,7 @@
         </div>
     {% endif %}
 
-    {# Column products block #}
-    {% if pagination %}
-        {{ show_products(pagination.items) }}
-
-        {{ render_pagination(pagination, "products") }}
-    {% endif %}
+    {# Products block. Must be with pagination #}
+    {% include "products/products.html" %}
 
 {% endblock %}

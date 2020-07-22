@@ -1,16 +1,16 @@
-from py_market import app, db, mail, g, flash
-from py_market import security, user_datastore
+from py_market import app, db, mail, g, flash, security, user_datastore
 from py_market.models import User
-from flask import Flask, url_for, redirect, request, render_template, abort
+from py_market.forms import CustomRegisterForm, CustomLoginForm
+
+from flask import Blueprint, url_for, redirect, request, render_template, abort
+
 from flask_security.decorators import login_required, roles_required
+from flask_security.utils import login_user, logout_user, hash_password
 from flask_security.core import current_user
 from flask_login import login_user, logout_user
 
-from py_market.forms import CustomRegisterForm, CustomLoginForm
-from py_market.routes import home
-
 from flask_mail import Message
-from flask_security.utils import login_user, logout_user, hash_password
+
 from itsdangerous.url_safe import URLSafeTimedSerializer
 from itsdangerous.exc import BadSignature, SignatureExpired
 from jinja2 import Markup
@@ -21,7 +21,9 @@ invalid_token_markup = Markup(f"""<h3>Время для подтверждени
                                   Проведите повторную регистрацию для подтверждения""")
 signer = URLSafeTimedSerializer(secret_key=app.config.get("SECRET_KEY"))
 
+bp_auth = Blueprint('auth', __name__, url_prefix='/auth', template_folder="templates")
 
+# !!!! Переделать - убрать тут и добавить в html
 def collect_warnings(form_errors) -> list:
     """Collect all warning in form and return
         :returns list of strings"""
@@ -31,68 +33,68 @@ def collect_warnings(form_errors) -> list:
     return warnings
 
 
-@app.route("/register", methods=["POST", "GET"])
+@bp_auth.route("/register", methods=["POST", "GET"])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
     warnings = False  # warnings from validation
-
     form = CustomRegisterForm(request.form)
     if request.method == "POST":
-
         if form.validate_on_submit():
             # Success register
             user = user_datastore.create_user(name=form.name.data,
                                               password=hash_password(form.password.data),
                                               email=form.email.data)
-            db.session.commit()
+            user_datastore.commit()
+            role = user_datastore.find_role(app.config["USER_ROLE"])
+            # Set default role to user
+            user_datastore.add_role_to_user(user, role)
             sign = signer.dumps({"id": user.id, "email": user.email})
-            # print(sign)
             # external - link with hostname
             confirm_link = url_for("activate_user", token=sign, _external=True)
             # Send message to Email and info to user
             flash(f"На почту {form.email.data} отправлено сообщение для подтверждения", category="message")
             msg = Message("Подтверждение регистрации",
                           recipients=[user.email],
-                          html=render_template("mail.html", username=user.name,
+                          html=render_template("auth/mail.html",
+                                               username=user.name,
                                                name="TestName",
                                                link=confirm_link,
                                                confirm_time=confirm_time))
             mail.send(msg)
-
             return redirect(url_for("login"))
 
         # else not valid user form
         if form.errors:
             warnings = collect_warnings(form.errors)
 
-    return security.render_template("register_user.html",
-                                    title="Регистрация",
-                                    form=form,
-                                    warnings=warnings)
+    return render_template("auth/register_user.html",
+                           title="Регистрация",
+                           form=form,
+                           warnings=warnings)
 
 
-@app.route("/login/", methods=["POST", "GET"])
+@bp_auth.route("/login", methods=["POST", "GET"])
 def login():
     form = CustomLoginForm(request.form)
     warnings = None
     if request.method == "POST":
         if form.validate_on_submit():
-            user = User.get_user_by_email(form.email.data)
+            user = user_datastore.find_user(email=form.email.data)
             # If user confirmed email
             if user.is_auth:
-                flash("Вы успешно вошли", category="message")
                 login_user(user, form.remember_me.data)
+                flash("Вы успешно вошли", category="message")
                 # set user to global variable
                 return redirect(url_for("home"))
         # else not valid user form
         if form.errors:
-            flash("У вас ошибки", "warning")
+            # flash("У вас ошибки", "warning")
             warnings = collect_warnings(form.errors)
-    return security.render_template('login.html', title='Войти', form=form, warnings=warnings)
+    return render_template('auth/login.html', title='Войти', form=form, warnings=warnings)
 
 
-@app.route("/user_confirm/<string:token>")
+@bp_auth.route("/user_confirm/<string:token>")
 def activate_user(token):
 
     try:
@@ -109,20 +111,23 @@ def activate_user(token):
         except Exception as e:
             print(e)
         # Invalid token data
-        return render_template("base.html", info=invalid_token_markup)
+        return render_template("py_market/base.html", info=invalid_token_markup)
 
     # Valid token
     token_user_id, token_user_email = data["id"], data["email"]
-    user = User.query.get_or_404(token_user_id)
-    if user.email == token_user_email:
+    # user = User.query.get_or_404(token_user_id)
+    user = user_datastore.find_user(id=token_user_id, email=token_user_email)
+
+    if user is not None:
         # User confirmed email
-        user.auth_user()
+        # user.auth_user()
+        user_datastore.activate_user(user)
         login_user(user)
         return redirect('home')
-    return render_template("base.html", info="Sorry. Bad user token id")
+    return render_template("py_market/base.html", info="Sorry. Bad user token id")
 
 
-@app.route("/logout")
+@bp_auth.route("/logout")
 @login_required
 def logout():
     # Delete user data from session

@@ -1,0 +1,68 @@
+{% macro render_pagination(pagination, endpoint) %}
+    <hr>
+    <ul class="uk-pagination uk-flex-center uk-margin-medium-top" uk-margin>
+        {% if pagination.has_prev %}
+            <li class="uk-margin-auto-vertical">
+                <button class="uk-button uk-button-text uk-text-muted"
+                        onclick="getPage(this, '{{ url_for("products.base") }}', {{ pagination.prev_num }})">
+                    <span uk-pagination-previous></span>
+                </button>
+                {# <a href="{{url_for(endpoint, page=pagination.prev_num)}}"><span uk-pagination-previous></span></a>#}
+            </li>
+        {% endif %} 
+
+        {%- for page in pagination.iter_pages() %}
+            {% if page %}
+                {% if page != pagination.page %}
+                    <li>
+{#            href="{{ url_for(endpoint) }}"#}
+                        <button class="uk-button uk-button-text"
+                           onclick="getPage(this, '{{ url_for("products.base") }}', {{ page }})">
+                            {{ page }}
+                        </button>
+                    </li>
+                {% else %}
+                    <li class="uk-active">
+                        <button class="uk-button uk-button-text uk-disabled">{{ page }}</button>
+                    </li>
+                {% endif %}
+            {% else %}
+                <li class="uk-disabled "><span>...</span></li>
+            {% endif %}
+        {%- endfor %}
+
+        {% if pagination.has_next %}
+            <li class="uk-margin-auto-vertical">
+                <button class="uk-button uk-button-text uk-text-muted"
+                        onclick="getPage(this, '{{ url_for("products.base") }}', {{ pagination.next_num }})">
+                    <span uk-pagination-next></span>
+                </button>
+                {# <a href="{{url_for(endpoint, page=pagination.next_num)}}"><span uk-pagination-next></span></a>#}
+            </li>
+        {% endif %}
+    </ul>
+{% endmacro %}
+
+{# CATEGORIES AT HOME PAGE #}
+{% macro show_categories(categories) %}
+{#  uk-child-width-1-2@s  #}
+    <div class="uk-grid-collapse uk-child-width-expand@m  uk-child-width-1-1@s
+                uk-flex-center uk-text-center uk-text-uppercase" uk-grid
+         style="color: white">
+        {#  uk-card-default uk-card-body uk-padding-remove uk-width-expand  #}
+        {% for category in categories %}
+            <form method="get" class="uk-link-toggle uk-card-hover uk-first-column"
+                  action="{{ url_for('products.base') }}">
+{#                <input type="hidden" value="{{ csrf_token() }}" name="csrf_token">#}
+                <input type="hidden" value="{{category.name}}"  name="category">
+                <input type="submit" value="{{category.name}}"
+                       class="uk-button uk-width-1-1 uk-button-large uk-padding-small home_page_menu">
+            </form>
+        {% endfor %}
+        <a href="{{ url_for('products.base') }}" class="uk-link-toggle uk-card-hover uk-first-column">
+            <button class="uk-button uk-width-1-1 uk-button-large uk-padding-small home_page_menu">
+                Показать все
+            </button>
+        </a>
+    </div>
+{% endmacro %}

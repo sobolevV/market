@@ -54,17 +54,23 @@ function getFormData() {
             continue
         }
 
-        if (input.type !== "radio"){
-            // Get data from each not radio input
-            if (!(input.name in data)){
-                data[input.name] = [input.value];
-            }
-            else if (input.name in data && input.value.length && input.checked){
-                data[input.name].push(input.value);
+        if (input.type === "checkbox"){
+            // Get data from each checkbox input
+            if ( input.checked ) {
+                if (input.name in data){
+                    data[input.name].push(input.value);
+                }
+                else{
+                    data[input.name] = [input.value];
+                }
             }
         }
-        else if (!(input.name in data) && input.checked){
-            // Get only checked value
+
+        if ((input.type === "radio") && input.checked){
+            data[input.name] = input.value;
+        }
+
+        if ((input.type === "number") && input.value.length){
             data[input.name] = input.value;
         }
     }

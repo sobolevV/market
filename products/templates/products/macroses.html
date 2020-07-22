@@ -1,0 +1,132 @@
+{# SHOW PRODUCT CART #}
+{% macro show_products(products, user) %}
+    {% if products %}
+        <div id="products" uk-grid class="uk-grid uk-flex-center uk-child-width-1-3@m uk-child-width-1-4@l"
+             uk-height-match=".uk-card">
+            <meta name="csrf-token" content="{{ csrf_token() }}">
+            {% for product in products %}
+                <div>
+                    <div class="uk-card uk-card-default">
+                        <div class="uk-card-media-top">
+                            {% if product.photos|length  >= 1%}
+                                {% with preview = product.photos[0].path %}
+                                    <img class="uk-align-center fill-img"
+                                     src="{{url_for('static', filename=preview) }}"
+                                     alt="alt text"
+                                     sizes="(min-width: 150px; min-height:250px;) 500px, 100vw">
+                                {% endwith %}
+                            {% else %}
+                            {# uk-height-max-medium#}
+                            <img class=" uk-align-center"
+                                 src="{{ url_for('static', filename='images/default_product.jpg') }}"
+                                 alt="alt text">
+                            {% endif %}
+                        </div>
+
+                        <div class="uk-width-1-1">
+                            <div class="uk-card-header">
+                                <h3 class="uk-card-title uk-text-uppercase uk-text-center">
+                                    {{ product.name }}
+                                </h3>
+                            </div>
+
+                            <div class="uk-card-footer">
+                                <div class="uk-flex uk-flex-between uk-child-width-1-2">
+                                    {# Price #}
+                                    <div>
+                                        <div class="uk-text-bold uk-text-center uk-text-large">{{ product.price }} Р.</div>
+                                    </div>
+                                    {# Cart #}
+                                    {% if user.is_authenticated %}
+                                        <div>
+                                            <button
+                                               class="uk-icon-button uk-width-1-2 uk-icon uk-float-right uk-button-primary"
+                                               uk-icon="cart" onclick="addToCart(this, {{ product.id }})">
+                                            </button>
+                                        </div>
+                                    {% endif %}
+
+                                </div>
+                                {# url_for('add', variable=foo)#}
+
+                            </div>
+                            <div class="uk-width-1-1">
+                                <a class="uk-button-link" href="{{ url_for('products.product_page', id=product.id) }}">
+                                    <button class="uk-button-large uk-button-default uk-width-1-1 uk-text-uppercase">
+                                        Подробнее
+                                    </button>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div> {# Product card block #}
+                </div> {# Empdy div block #}
+        {% endfor %} {# Products loop for #}
+        </div> {# Grid block #}
+    {% endif %}
+{% endmacro %}
+
+{# SHOW PRODUCT FILTER MENU #}
+{% macro show_product_filter(filter) %}
+    <form id="filter" class="uk-flex uk-flex-around uk-background-muted uk-text-small"
+          method="get" action="{{ url_for('products.base', page=1) }}">
+
+        {# action="{{url_for("products", page=1)}}"#}
+{#        {{filter.hidden_tag()}}#}
+
+        {# Product category + Materials#}
+        {% for field in [filter.category, filter.material] %}
+            {% if field|length %}
+                <div class="uk-margin uk-margin-top">
+                    <div class="uk-form-label">{{ field.label  }}</div>
+                    {{ field(class_="uk-list uk-list-collapse") }}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+         {# Price #}
+        <div class="uk-margin">
+            <div class="uk-form-label uk-text-">Цена</div>
+            <div class="uk-flex-inline uk-margin">
+                <label>{{ filter.minPrice.label }}
+                    {{ filter.minPrice(class_="uk-input uk-form-small") }}
+                </label>
+                <label>{{ filter.maxPrice.label }}
+                    {{ filter.maxPrice(class_="uk-input uk-form-small") }}
+                </label>
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <div class="uk-form-label uk-text-">{{ filter.order.label }}</div>
+            {{ filter.order(class_="uk-list uk-list-collapse") }}
+        </div>
+
+        <div class="uk-margin uk-padding uk-padding-remove-horizontal">
+            <button onclick="applyFilter('{{ url_for("products.base") }}')"
+                    class="uk-button-primary uk-button-large uk-width1-1">
+                Применить
+            </button>
+        </div>
+
+            {# Seazon #}
+{#            <div class="uk-margin">#}
+{#                <div class="uk-form-label">Сезон</div>#}
+{#                <div class="uk-form-controls">#}
+{#                    <label><input class="uk-checkbox" type="checkbox" name="seazon" value="vesna"> Весна</label>#}
+{#                    <label><input class="uk-checkbox" type="checkbox" name="seazon" value="leto"> Лето</label>#}
+{#                </div>#}
+{#            </div>#}
+
+            {# Sex #}
+{#            <div class="uk-margin">#}
+{#                <div class="uk-form-label">Пол</div>#}
+{#                <div class="uk-form-controls">#}
+{#                    <label><input class="uk-checkbox"#}
+{#                                  type="checkbox"#}
+{#                                  name="sex">Option 01</label>#}
+{#                    <label><input class="uk-checkbox " type="checkbox" name="sex"> Option 02</label>#}
+{#                </div>#}
+{#            </div>#}
+    </form>
+{% endmacro %}

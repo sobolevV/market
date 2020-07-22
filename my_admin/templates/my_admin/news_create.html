@@ -1,0 +1,50 @@
+{% extends "admin/master.html" %}
+
+{% block head %}
+   {{ super() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@2.3.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-html@2.0.0/build/edjsHTML.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='/css/uikit.css') }}">
+    <script src="{{ url_for('static', filename='/js/news_editor.js') }}"></script>
+
+    {# SOME CSS #}
+    <style>
+    .ce-block__content{
+        border: 1px solid silver !important;
+    }
+    .ce-toolbar__plus{
+        display: flex !important;
+        background: #93ec2c;
+    }
+    </style>
+
+{% endblock %}
+
+{# BODY CONTENT #}
+{% block body %}
+    <div class="uk-background-muted">
+         <fieldset class="uk-fieldset">
+             <div class="uk-margin">
+                <input class="uk-input" type="text" name="title"
+                       placeholder="Название статьи" maxlength="300">
+             </div>
+             <div class="uk-margin">
+                <textarea class="uk-textarea" rows="3" name="title_description"
+                          placeholder="Краткое описание статьи" maxlength="300"></textarea>
+             </div>
+         </fieldset>
+
+        <div id="editorjs" class="">
+            <meta name="csrf-token" content="{{ csrf_token() }}">
+        </div>
+
+        <button class="uk-button uk-button-primary uk-button-large uk-width-1-1" onclick="saveTitle()">Сохранить</button>
+    </div>
+
+{% endblock %}

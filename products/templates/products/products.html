@@ -1,0 +1,11 @@
+{% from "products/macroses.html" import show_products, show_product_filter with context%}
+
+{# Column products block #}
+{% if pagination %}
+    <div id="content">
+    {% with user = user %}
+        {{ show_products(pagination.items, user) }}
+        {{ render_pagination(pagination, "products") }}
+    {% endwith %}
+    </div>
+{% endif %}

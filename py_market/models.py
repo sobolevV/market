@@ -1,10 +1,10 @@
 from py_market import db
+from flask import url_for
 from flask_security import UserMixin, RoleMixin
 from datetime import date
-
-# not good
-ROLE_USER = "user"
-ROLE_ADMIN = "admin"
+from random import randint, choice
+from pathlib import PurePath
+import os
 
 # roles_users many_to_many
 roles_users = db.Table("roles_users", db.metadata,
@@ -66,7 +66,7 @@ class Role(db.Model, RoleMixin):
     __tablename__ = "Role"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), default=ROLE_USER)
+    name = db.Column(db.String(30), default="User")
     description = db.Column(db.String(100), nullable=True, )
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"))
 
@@ -82,16 +82,37 @@ class Address(db.Model):
     address = db.Column(db.String(150), nullable=True)
 
 
-# ____Define models for products____
-# products_materials many to many
-# products_materials = db.Table("products_materials", db.Model.metadata,
-#                               db.Column('product_id', db.Integer, db.ForeignKey("Product.id")),
-#                               db.Column('material_id', db.Integer, db.ForeignKey("Material.id")))
+class News(db.Model):
+    """News for main page of web site"""
+    __tablename__ = "News"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(300))
+    description = db.Column(db.String(300))
+    text = db.Column(db.Text())
+    image_url = db.Column(db.String(400))
+
+    @staticmethod
+    def from_request(request):
+        html_data = request.form["html"].strip()
+        title = request.form["title"]
+        desc = request.form["description"]
+        image_url = request.form["image_url"]
+        if len(image_url) == 0:
+            image_url = url_for('static', filename=f"/images/news/bg_news_{randint(1, 4)}.jpg")
+            # try:
+            #     path = PurePath(url_for("static")).joinpath(PurePath("images/news/"))
+            #     img_name = choice(os.listdir(path))
+            #     image_url = path.joinpath(img_name)
+            # except Exception as e:
+            #     print(e)
+        return News(title=title, description=desc, text=html_data, image_url=image_url)
+
 
 products_categories = db.Table("products_categories", db.metadata,
                                 db.Column('product_id', db.Integer, db.ForeignKey('Product.id')),
                                 db.Column('category_id', db.Integer, db.ForeignKey('Category.id'))
-                                )
+                               )
 
 
 class Product(db.Model):
@@ -154,7 +175,8 @@ class ProductPhoto(db.Model):
         return f"<ProductPhoto: {self.path}>"
 
 
-class Pstorage(db.Column):
+# # # # # # # # # # # # # #
+class Pstorage(db.Model):
     """Count of each product at storage"""
     __tablename__ = "Pstorage"
 
@@ -165,3 +187,14 @@ class Pstorage(db.Column):
     def __repr__(self):
         return f"ID: {self.id}, size: {self.size}, count: {self.count}"
 
+# # # # # # # # # # # # # #
+
+
+class Cart(db.Model):
+    __tablename__ = "Cart"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("User.id"))
+    product_id = db.Column(db.Integer, db.ForeignKey("User.id"))
+    count = db.Column(db.SmallInteger, default=1)
+    add_date = db.Column(db.Date(), default=date.today())
