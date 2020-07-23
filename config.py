@@ -4,8 +4,8 @@ from mail_config import *
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Config for default Flask
-SECRET_KEY = 'myseckretkey'
-SECURITY_PASSWORD_SALT = 'mysecretsalt'
+SECRET_KEY = os.environ.get("SECRET_KEY")
+SECURITY_PASSWORD_SALT = os.environ.get("SECRET_SALT")
 USER_ROLE = "User"
 ADMIN_ROLE = "Admin"
 CSRF_ENABLED = True
@@ -18,3 +18,10 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_ECHO = False
 
 ITEMS_PER_PAGE = 16
+
+# Admin data
+ADMIN_MAIL = os.environ.get('ADMIN_MAIL')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
+
+# SSL
+SSL_REDIRECT = True if os.environ.get('DYNO') else False

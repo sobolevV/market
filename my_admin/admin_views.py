@@ -2,7 +2,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.form.upload import ImageUploadField
 from flask_admin import BaseView, AdminIndexView, expose
 from flask_security import current_user
-from flask import abort, request, jsonify, url_for, redirect
+from flask import abort, request, jsonify, url_for, redirect, render_template
 from werkzeug.utils import secure_filename
 from itsdangerous.serializer import Serializer
 
@@ -14,8 +14,7 @@ from PIL import Image, ImageOps
 
 import os.path as op
 
-STATIC_DIR = Path(BASE_DIR).joinpath(Path("py_market\\static\\"))
-safe_url = Serializer("image-key")
+STATIC_DIR = PurePath(BASE_DIR).joinpath(PurePath("py_market\\static\\"))
 
 
 class RoleModelView(ModelView):
@@ -23,7 +22,7 @@ class RoleModelView(ModelView):
     def is_accessible(self):
         if current_user.has_role(app.config["ADMIN_ROLE"]):
             return True
-        abort(403)
+        return render_template("py_market/home.html", info="404 Page not found")
 
 
 class DefaultView(RoleModelView):
@@ -48,7 +47,7 @@ class RoleView(RoleModelView):
 
 
 def image_name_gen(obj, file_data):
-    """Generates name for image"""
+    """Generate name for image"""
     root, ext = op.splitext(file_data.filename)
     # Save only first part of image name
     if len(root) > 10:
@@ -119,7 +118,7 @@ class NewsEditor(BaseView):
             if 'image' in request.files:
                 file = request.files["image"]
                 filename = image_name_gen(obj=None, file_data=file)
-                file_path = Path(STATIC_DIR, "images/news/", filename)
+                file_path = PurePath(STATIC_DIR, "images/news/", filename)
                 file.save(file_path)
                 return jsonify({"url": url_for('static', filename="images/news/"+filename)})
             # Post to save all HTML data

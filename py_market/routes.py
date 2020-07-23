@@ -72,17 +72,15 @@ def inject_user():
 
 
 # Handle errors
-@app.errorhandler(404)
-def page_not_found(e):
-    """Not found page"""
-    return render_template('py_market/base.html', info="404 Error"), 404
-
-
 @app.errorhandler(400)
 def page_not_found(e):
     """Not found page"""
-    return render_template('py_market/base.html', info="404 Error"), 400
+    return render_template('py_market/base.html', info="400 Bad Request"), 400
 
+@app.errorhandler(404)
+def page_not_found(e):
+    """Not found page"""
+    return render_template('py_market/base.html', info="400 Page not found"), 404
 
 @app.errorhandler(500)
 def server_error(e):

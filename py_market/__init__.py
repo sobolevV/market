@@ -34,6 +34,21 @@ from py_market.models import User, Role
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore, login_form=CustomLoginForm, register_form=CustomRegisterForm)
 
+# Create first user - admin
+if User.get_user_by_email(app.config["ADMIN_MAIL"]) is None:
+    admin = User(name="Admin", email=app.config["ADMIN_MAIL"], password=app.config["ADMIN_PASSWORD"])
+    if user_datastore.find_role(app.config["ADMIN_ROLE"]) is None:
+        user_datastore.create_role(name=app.config["ADMIN_ROLE"])
+    user_datastore.activate_user(admin)
+    user_datastore.add_role_to_user(admin, user_datastore.find_role("Admin"))
+    print("Admin created")
+
+if app.config['SSL_REDIRECT']:
+    from flask_sslify import SSLify
+    # from werkzeug.contrib.fixers import ProxyFix
+    sslify = SSLify(app)
+    # app.wsgi_app = ProxyFix(app.wsgi_app)
+
 # Routes at bottom
 from py_market import routes
 

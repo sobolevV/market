@@ -55,13 +55,6 @@ def base():
         page = int(request_args["page"][0])
         del request_args["page"]
 
-    # If request contains any arguments
-    #     if "form_filter" not in session or session["form_filter"] != request_args:
-    #         session["form_filter"] = request_args
-    #
-    # # If already was request
-    # if "form_filter" in session and len(session["form_filter"]):
-    #     # Generate form field for user
     if len(request_args):
         form_filter = FilterProductsForm().from_dict(request_args)
         target_products = products_filter(products_model=Product, form_data=form_filter)
@@ -71,7 +64,7 @@ def base():
 
     # {'category': ['car', 'cat 1'], 'minPrice': [''], 'maxPrice': [''], 'order': ['date']}
     # Pagination
-    products_pagination = target_products.paginate(page=page, per_page=1)  # app.config["ITEMS_PER_PAGE"]
+    products_pagination = target_products.paginate(page=page, per_page=app.config["ITEMS_PER_PAGE"])
     return render_template("products/products_base.html",
                            pagination=products_pagination,
                            product_filter=form_filter)

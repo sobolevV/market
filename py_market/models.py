@@ -1,5 +1,6 @@
-from py_market import db
+from py_market import db, BASE_DIR
 from flask import url_for
+from sqlalchemy import event
 from flask_security import UserMixin, RoleMixin
 from datetime import date
 from random import randint, choice
@@ -121,10 +122,28 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     name = db.Column(db.String(100), nullable=False)
-    # Float
     price = db.Column(db.Float, nullable=False)
+    male = db.Column(db.Boolean, nullable=True)
+    brand = db.Column(db.String(100), nullable=True)
     description = db.Column(db.String(200))
     arrival_date = db.Column(db.Date(), default=date.today())
+
+    def __repr__(self):
+        return f"<Product: id={self.id}, name={self.name}>"
+
+
+@event.listens_for(Product, 'after_delete')
+def receive_after_delete(mapper, connection, target):
+    print(target, "deleted. image paths ", target.photos)
+    if target.photos:
+        for photo_obj in target.photos:
+            # BASE_DIR
+            file_path = PurePath(BASE_DIR, "py_market\\static\\", photo_obj.path)
+            if os.path.exists(str(file_path)):
+                try:
+                    os.remove(str(file_path))
+                except Exception as e:
+                    print(e)
 
 
 class Material(db.Model):
@@ -135,7 +154,7 @@ class Material(db.Model):
 
     product_id = db.Column(db.Integer, db.ForeignKey("Product.id"))
     products = db.relationship("Product",
-                               backref=db.backref("material", lazy="select", uselist=True),
+                               backref=db.backref("material", lazy="select"),
                                lazy="subquery",
                                foreign_keys=[product_id],
                                uselist=True)

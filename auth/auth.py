@@ -23,6 +23,7 @@ signer = URLSafeTimedSerializer(secret_key=app.config.get("SECRET_KEY"))
 
 bp_auth = Blueprint('auth', __name__, url_prefix='/auth', template_folder="templates")
 
+
 # !!!! Переделать - убрать тут и добавить в html
 def collect_warnings(form_errors) -> list:
     """Collect all warning in form and return
@@ -42,13 +43,12 @@ def register():
     if request.method == "POST":
         if form.validate_on_submit():
             # Success register
-            user = user_datastore.create_user(name=form.name.data,
-                                              password=hash_password(form.password.data),
-                                              email=form.email.data)
-            user_datastore.commit()
+            user = User(name=form.name.data, password=hash_password(form.password.data), email=form.email.data)
             role = user_datastore.find_role(app.config["USER_ROLE"])
             # Set default role to user
             user_datastore.add_role_to_user(user, role)
+            db.session.add(user)
+            user_datastore.commit()
             sign = signer.dumps({"id": user.id, "email": user.email})
             # external - link with hostname
             confirm_link = url_for("activate_user", token=sign, _external=True)
