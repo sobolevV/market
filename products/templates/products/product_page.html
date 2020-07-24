@@ -32,48 +32,67 @@
             {# PRODUCT DESCRIPTION #}
 
             <div>
-                {# PRODUCT NAME #}
-                <div class="uk-h2 uk-text-bold uk-text-uppercase">
-                    {{ product.name }}
+                {# PRODUCT BRAND #}
+                <div class="uk-grid uk-child-width-1-2 uk-flex-around">
+                    {# left column #}
+                    <div>
+                        {# PRODUCT BRAND #}
+                        {% if product.brand %}
+                        <div class="uk-h2 uk-text-uppercase">
+                            {{ product.name }}
+                        </div>
+                        {% endif %}
+                        {# PRODUCT NAME #}
+                        <div class="uk-h3 uk-text-uppercase">
+                            {{ product.name }}
+                        </div>
+                    </div>
+                    {# right column #}
+                    <div>
+                        {# PRODUCT PRICE #}
+                        <div class="uk-h4 uk-text-muted uk-text-uppercase">
+                            {{ product.price }} Р.
+                        </div>
+                    </div>
                 </div>
-                {# PRODUCT PRICE #}
-                <div class="uk-h3 uk-text-bold uk-text-uppercase">
-                    {{ product.price }}
-                </div>
+
+
                 <hr>
                 {# ANOTHER DESCRIPTION #}
                 <div class="">
                     {# DESCRIPTION #}
-                    {% if product.description %}
-                        <label class="uk-text-bold">Описание: </label>
-                        <span class="uk-text-light ">{{ product.description }}</span>
-                    {% endif %}
-                    {# PRODUCT MATERIAL #}
-                    {% if product.material|length >= 1 %}
-                        <label class="uk-text-bold">Материал: </label>
-                        <p class="uk-text-muted uk-text-middle">
-                            {% for materials in product.material|groupby("name") %}
-                                {{ materials.list|join(", ") }}
-                            {% endfor %}
-                        </p>
-                    {% endif %}
-                    {# DESCRIPTION #}
-                    {#                #}
+                    <div class="uk-description-list">
+                        {% if product.description %}
+                            <dt>Описание</dt>
+                            <dd>{{ product.description }}</dd>
+                        {% endif %}
+                        {# PRODUCT MATERIAL #}
+                        {% if product.material|length >= 1 %}
+                            <dt>Материал</dt>
+                            <dd class="uk-text-muted uk-text-middle">
+                                {% for materials in product.material|groupby("name") %}
+                                    {{ materials.list|join(", ") }}
+                                {% endfor %}
+                            </dd>
+                        {% endif %}
+                        {# PRODUCT CATEGORY #}
+                        {% if product.category|length %}
+                            <dt>Категория</dt>
+                             <dd>
+                                {% for category in product.category|groupby("name") %}
+                                    {{ category.list|join(",") }}
+                                {% endfor %}
+                            </dd>
+                        {% endif %}
+                        {# PRODUCT SEX #}
+                        {% if product.male is defined %}
+                            <dt>Пол</dt>
+                            <dd>{% if product.male %} {{ "Мужской" }} {% else %} {{ "Женский" }} {% endif %}</dd>
+                        {% endif %}
+                        {# PRODUCT DATE ADD #}
+                        <dt class="uk-text-bold">Добавлено: {{ product.arrival_date }}</dt>
 
-                    {# PRODUCT CATEGORY #}
-                    {% if product.category|length %}
-                        <p class="uk-text-muted uk-text-middle">
-                            <label class="uk-text-bold">Категория: </label>
-                            {% for category in product.category|groupby("name") %}
-                                {{ category.list|join(",") }}
-                            {% endfor %}
-                         </p>
-                    {% endif %}
-                    {# PRODUCT DATE ADD #}
-                    <p class="uk-text-muted uk-text-middle">
-                        <label class="uk-text-bold">Дата добавления: </label>
-                        {{ product.arrival_date }}
-                    </p>
+                    </div>
                 </div>
             </div>
         </div>

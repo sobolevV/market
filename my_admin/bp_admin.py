@@ -13,9 +13,8 @@ admin.add_view(ProductView(Product, db.session, category="Товар", name="Т�
 admin.add_views(DefaultView(Material, db.session, category="Товар", name="Материалы/состав товара"),
                 DefaultView(Category, db.session, category="Товар", name="Категории товара "))
 admin.add_view(NewsEditor(endpoint="news", name="Добавить новость"))
-# path.join(path.dirname(__file__),
-# path.join(path.dirname(__file__),
+
 bp_admin = Blueprint('bp_admin', __name__,
                      url_prefix='/admin',
                      template_folder="templates",
-                     static_folder="static")
+                     static_folder="static", static_url_path="my_admin/static")

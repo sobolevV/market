@@ -3,3 +3,4 @@
 /py_market/test.db
 /py_market/tmp/test.db
 /.env
+/Procfile.windows

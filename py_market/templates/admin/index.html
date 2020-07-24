@@ -1,4 +1,5 @@
 {% extends 'admin/master.html' %}
+
 {% block head %}
     {{ super() }}
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='/css/uikit.css') }}">
@@ -7,6 +8,14 @@
 
 {% block body %}
     <div class="uk-container">
+
+
+        {% with messages = get_flashed_messages() %}
+            {% for msg in messages %}
+                <div class="uk-alert uk-alert-primary">{{ msg }}</div>
+            {% endfor %}
+        {% endwith %}
+
         <div class="uk-grid uk-grid-column-medium uk-flex-wrap">
             <div>
                 <a class="uk-link uk-button-link" href="{{ url_for('home') }}">

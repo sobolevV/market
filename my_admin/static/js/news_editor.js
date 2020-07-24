@@ -80,21 +80,3 @@ function saveTitle() {
         alert("Возникла ошибка при сохранении" + error);
     })
 }
-// {#axios({#}
-// {#    method: "get",#}
-// {#    url:'',#}
-// {#    data: {#}
-// {#        formdata: formData,#}
-// {#        img: file#}
-// {#    },#}
-// {#    headers: {#}
-// {#      'Content-Type': 'multipart/form-data'#}
-// {#    }#}
-// {#/}).then(function (resp){return {#}
-// {#        success: 1,#}
-// {#        file: {#}
-// {#          url: 'https://codex.so/upload/redactor_images/o_80beea670e49f04931ce9e3b2122ac70.jpg',#}
-// {#          // any other image data you want to store, such as width, height, color, extension, etc#}
-// {#        }#}
-// {#      };#}
-// {#/})#}

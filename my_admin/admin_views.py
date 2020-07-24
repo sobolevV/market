@@ -2,7 +2,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.form.upload import ImageUploadField
 from flask_admin import BaseView, AdminIndexView, expose
 from flask_security import current_user
-from flask import abort, request, jsonify, url_for, redirect, render_template
+from flask import abort, request, jsonify, url_for, redirect, render_template, flash, Response
 from werkzeug.utils import secure_filename
 from itsdangerous.serializer import Serializer
 
@@ -129,6 +129,21 @@ class NewsEditor(BaseView):
             return redirect(url_for('news.base'))
 
         return self.render("my_admin/news_create.html")
+
+    @expose('/delete_title', methods=("POST", ))
+    def delete(self):
+        """Delete title"""
+        form_dict = request.form.to_dict()
+        title_id = form_dict["title_id"]
+        del_title = News.query.get(title_id)
+        if del_title is None:
+            flash("Не удалось удалить новость.")
+            return Response(response="{status: 500}", mimetype="json")
+        else:
+            db.session.delete(del_title)
+            db.session.commit()
+            flash(f"Новость {str(del_title.title)} удалена.")
+            return Response(response="{status: 200}", mimetype="json")
 
     def is_accessible(self):
         """Setup access only for Admin"""

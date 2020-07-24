@@ -1,4 +1,3 @@
-import os
 from mail_config import *
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -24,4 +23,4 @@ ADMIN_MAIL = os.environ.get('ADMIN_MAIL')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
 
 # SSL
-SSL_REDIRECT = True if os.environ.get('DYNO') else False
+SSL_REDIRECT = False  # True if os.environ.get('DYNO') else False

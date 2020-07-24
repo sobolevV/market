@@ -31,7 +31,7 @@ class User(db.Model, UserMixin):
     confirmed_at = db.Column(db.DateTime())
 
     # Relations (FK)
-    roles = db.relationship("Role", backref=db.backref("users", lazy=True), uselist=True) # , secondary="roles_users"
+    roles = db.relationship("Role", backref=db.backref("users", lazy=True), uselist=True)
     address_id = db.Column(db.Integer, db.ForeignKey("Address.id"))
     address = db.relationship("Address", backref=db.backref("users", lazy=True))
 
@@ -115,6 +115,11 @@ products_categories = db.Table("products_categories", db.metadata,
                                 db.Column('category_id', db.Integer, db.ForeignKey('Category.id'))
                                )
 
+products_materials = db.Table("products_materials", db.metadata,
+                                db.Column('product_id', db.Integer, db.ForeignKey('Product.id')),
+                                db.Column('material_id', db.Integer, db.ForeignKey('Material.id'))
+                             )
+
 
 class Product(db.Model):
     """Product"""
@@ -151,16 +156,14 @@ class Material(db.Model):
     __tablename__ = "Material"
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(100), nullable=True)
 
     product_id = db.Column(db.Integer, db.ForeignKey("Product.id"))
     products = db.relationship("Product",
-                               backref=db.backref("material", lazy="select"),
-                               lazy="subquery",
-                               foreign_keys=[product_id],
+                               backref=db.backref("material", lazy="select", uselist=True),
+                               secondary=products_materials,
                                uselist=True)
-
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(100), nullable=True)
 
 
 class Category(db.Model):
@@ -168,15 +171,16 @@ class Category(db.Model):
     __tablename__ = "Category"
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+
     product_id = db.Column(db.Integer, db.ForeignKey("Product.id"))
     products = db.relationship("Product",
                                backref=db.backref("category", lazy="select", uselist=True),
                                secondary=products_categories,
                                uselist=True)
-    name = db.Column(db.String(100), nullable=False, unique=True)
 
     def __repr__(self):
-        return f"{self.name}"
+        return f"<Product {self.name}>"
 
 
 class ProductPhoto(db.Model):
