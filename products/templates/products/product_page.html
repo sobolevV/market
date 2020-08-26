@@ -69,9 +69,10 @@
                         {# PRODUCT MATERIAL #}
                         {% if product.material|length >= 1 %}
                             <dt>Материал</dt>
-                            <dd class="uk-text-muted uk-text-middle">
-                                {% for materials in product.material|groupby("name") %}
-                                    {{ materials.list|join(", ") }}
+                            <dd >
+                                {% for material in product.material %}
+                                    {{ material.name }}
+                                    {{ "," if not loop.last }}
                                 {% endfor %}
                             </dd>
                         {% endif %}
@@ -79,8 +80,9 @@
                         {% if product.category|length %}
                             <dt>Категория</dt>
                              <dd>
-                                {% for category in product.category|groupby("name") %}
-                                    {{ category.list|join(",") }}
+                                {% for category in product.category %}
+                                    {{ category.name }}
+                                    {{ "," if not loop.last }}
                                 {% endfor %}
                             </dd>
                         {% endif %}
@@ -90,7 +92,7 @@
                             <dd>{% if product.male %} {{ "Мужской" }} {% else %} {{ "Женский" }} {% endif %}</dd>
                         {% endif %}
                         {# PRODUCT DATE ADD #}
-                        <dt class="uk-text-bold">Добавлено: {{ product.arrival_date }}</dt>
+                        <dt class="uk-text-light uk-text-muted">Добавлено: {{ product.arrival_date }}</dt>
 
                     </div>
                 </div>

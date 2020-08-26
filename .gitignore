@@ -1,6 +1,8 @@
-/.idea/
-/__pycache__/
-/py_market/test.db
-/py_market/tmp/test.db
-/.env
-/Procfile.windows
+.idea
+__pycache__/
+py_market/test.db
+py_market/tmp/test.db
+.env
+test.db
+Procfile.windows
+mail_config.py
